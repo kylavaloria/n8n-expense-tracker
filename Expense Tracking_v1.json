@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -672,
-        192
+        -960,
+        0
       ],
       "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
       "name": "Telegram Trigger",
@@ -60,8 +60,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -224,
-        192
+        -288,
+        96
       ],
       "id": "ef3527e3-d124-4005-aadf-f5e5789331f0",
       "name": "If text contains 'summary'"
@@ -95,8 +95,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        0,
-        288
+        -64,
+        192
       ],
       "id": "8eae1d71-57c5-4ffe-843e-c2837eae5c36",
       "name": "If message has photo"
@@ -142,8 +142,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        192
+        -736,
+        0
       ],
       "id": "b2c455d3-3930-47e1-9875-0d1d49dfd8f3",
       "name": "Normalize"
@@ -157,8 +157,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        224,
-        192
+        160,
+        96
       ],
       "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
       "name": "Get image",
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1344,
-        288
+        1280,
+        192
       ],
       "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
       "name": "Append row in sheet",
@@ -300,8 +300,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1120,
-        288
+        1056,
+        192
       ],
       "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
       "name": "Parse AI"
@@ -338,8 +338,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        448,
-        192
+        384,
+        96
       ],
       "id": "34f721c1-9cda-44e6-a640-56ee4736095a",
       "name": "Apply OCR"
@@ -361,8 +361,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        192
+        608,
+        96
       ],
       "id": "b2e7e668-d863-4605-b4d0-487921c7d4cf",
       "name": "Set text to raw_input"
@@ -384,8 +384,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        384
+        608,
+        288
       ],
       "id": "458ced93-f181-4353-a7ba-f6822df1d43a",
       "name": "Set text to raw_input1"
@@ -419,8 +419,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        896,
-        288
+        832,
+        192
       ],
       "id": "ea9fa4ec-6de6-405d-8950-20d650b26075",
       "name": "Extract info to JSON format"
@@ -444,8 +444,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        0,
-        0
+        -64,
+        -96
       ],
       "id": "3b3a9e5f-d9fb-4bf2-80c2-504cc691227d",
       "name": "Get row(s) in sheet",
@@ -463,8 +463,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        0
+        160,
+        -96
       ],
       "id": "340912f4-08bc-43d2-a923-b0407af267be",
       "name": "Code in JavaScript"
@@ -476,8 +476,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        448,
-        0
+        384,
+        -96
       ],
       "id": "0de08a65-4c0b-40d4-a749-3fcdd9b2b900",
       "name": "Code in JavaScript1"
@@ -499,8 +499,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        0
+        608,
+        -96
       ],
       "id": "2898196a-d8a6-4eb3-ab2b-e873b996431e",
       "name": "Edit Fields"
@@ -514,11 +514,160 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        896,
-        0
+        832,
+        -96
       ],
       "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
       "name": "Send a text message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e8ad90c3-1cfd-44de-b8e1-3209b9601eae",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "current",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -512,
+        0
+      ],
+      "id": "197204c6-f01e-435e-b6b3-f10b142f98c2",
+      "name": "If text contains 'current'"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -64,
+        -288
+      ],
+      "id": "1831c031-21f5-4a55-89ab-e0607778b84c",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = ($json.text || \"\").trim().toLowerCase();\n\n// Supports:\n// \"current\" -> today\n// \"current 2026-02-28\" -> that date (YYYY-MM-DD)\nlet target = null;\n\nconst m = text.match(/^current\\s+(\\d{4}-\\d{2}-\\d{2})$/);\nif (m) {\n  target = m[1];\n} else {\n  // today (local runtime time)\n  const now = new Date();\n  const yyyy = now.getFullYear();\n  const mm = String(now.getMonth() + 1).padStart(2, \"0\");\n  const dd = String(now.getDate()).padStart(2, \"0\");\n  target = `${yyyy}-${mm}-${dd}`;\n}\n\nreturn [{ json: { ...$json, target_date: target } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        -288
+      ],
+      "id": "3afa7384-4a9a-4529-bc61-0bbdb94e5a84",
+      "name": "Parse current date"
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $('Parse current date').first().json.target_date; // YYYY-MM-DD\n\nconst filtered = items.filter(i => {\n  const raw = i.json.Date || \"\";\n  const d = String(raw).slice(0, 10);\n  return d === target;\n});\n\n// If none matched, return ONE placeholder item so workflow continues\nif (filtered.length === 0) {\n  return [{\n    json: {\n      _no_rows: true,\n      Date: `${target}T00:00:00.000Z`,\n      Type: \"\",\n      Category: \"\",\n      Description: \"\",\n      Amount: 0,\n      Source: \"\",\n    }\n  }];\n}\n\nreturn filtered;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -288
+      ],
+      "id": "6c41394f-afbe-4f58-a90d-19279d04ad7c",
+      "name": "Filter rows to target day",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $('Parse current date').first().json.target_date; // YYYY-MM-DD\n\nlet totalExpense = 0;\nlet totalIncome = 0;\n\nconst expenseTotals = {};\nconst incomeTotals = {};\n\n// Ignore placeholder rows\nconst rows = items.map(i => i.json).filter(r => !r._no_rows);\n\nfor (const r of rows) {\n  const type = String(r.Type || \"\").toLowerCase();\n  const cat = String(r.Category || \"uncategorized\").toLowerCase();\n  const amt = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n  }\n}\n\nreturn [{\n  json: {\n    target_date: target,\n    totalExpense,\n    totalIncome,\n    expenseTotals,\n    incomeTotals,\n    count: rows.length,\n    no_transactions: rows.length === 0,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -288
+      ],
+      "id": "b0801d78-124b-482f-8a9f-75bc84e37deb",
+      "name": "Aggregate daily totals"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d58483a-6802-45f8-83b6-13af33584ddd",
+              "name": "reply_text",
+              "value": "={{ \n$json.no_transactions\n? `📍 Daily summary (${ $json.target_date })\n\nThere's no transactions logged for this day. ✅`\n: `📍 Daily summary (${ $json.target_date })\n\n💸 Expenses: ₱${Number($json.totalExpense || 0).toFixed(2)}\n💰 Income: ₱${Number($json.totalIncome || 0).toFixed(2)}\n🧾 Entries: ${$json.count || 0}\n\n📌 Expense by category:\n${\n  Object.entries($json.expenseTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n📌 Income by category:\n${\n  Object.entries($json.incomeTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        -288
+      ],
+      "id": "03779857-e271-440f-bf68-00ca2258f2d6",
+      "name": "Edit Fields (daily reply)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        -288
+      ],
+      "id": "3cd701e4-9ce8-4338-8940-12a7cb974b91",
+      "name": "Send Telegram message",
       "webhookId": "REDACTED",
       "credentials": {
         "telegramApi": {
@@ -592,7 +741,7 @@
       "main": [
         [
           {
-            "node": "If text contains 'summary'",
+            "node": "If text contains 'current'",
             "type": "main",
             "index": 0
           }
@@ -697,6 +846,79 @@
           }
         ]
       ]
+    },
+    "If text contains 'current'": {
+      "main": [
+        [
+          {
+            "node": "Parse current date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'summary'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Filter rows to target day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse current date": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter rows to target day": {
+      "main": [
+        [
+          {
+            "node": "Aggregate daily totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate daily totals": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields (daily reply)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields (daily reply)": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -705,7 +927,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d10dafed-fa88-434e-b07b-d629175ba754",
+  "versionId": "c1d8e203-ae2c-4a01-bfd6-0bcdaba74b76",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "REDACTED"

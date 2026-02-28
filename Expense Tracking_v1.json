@@ -1,0 +1,715 @@
+{
+  "name": "Expense Tracking",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        192
+      ],
+      "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
+      "name": "Telegram Trigger",
+      "webhookId": "f72ac564-b0c6-40cc-9872-74215a24263d",
+      "credentials": {
+        "telegramApi": {
+          "id": "5MkzmwDMblVJ4vqP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0029de99-2a9f-442f-9913-8b4a8ed270d6",
+              "leftValue": "={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "summary",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "44d38a46-e281-4e09-a3ae-cba806b914ee",
+              "leftValue": "={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "summarize",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        192
+      ],
+      "id": "ef3527e3-d124-4005-aadf-f5e5789331f0",
+      "name": "If text contains 'summary'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3a166a24-4739-4294-9ca7-c2592400d95f",
+              "leftValue": "={{ $json.photo_file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        288
+      ],
+      "id": "8eae1d71-57c5-4ffe-843e-c2837eae5c36",
+      "name": "If message has photo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4b713a1-b74c-4957-8827-fb02bccb04ef",
+              "name": "chat_id",
+              "value": "={{ $json.message?.chat?.id || $json.body?.message?.chat?.id || $json.chat?.id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "6e562043-6495-4294-8401-8341d88718de",
+              "name": "message_id",
+              "value": "={{ $json.message?.message_id || $json.body?.message?.message_id || $json.message_id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "c325c2fb-90e9-4944-8dba-7322ece198b7",
+              "name": "date_iso",
+              "value": "={{ new Date($json.message.date * 1000).toISOString() }}",
+              "type": "string"
+            },
+            {
+              "id": "ca99eedb-5bbf-4ad2-8155-52dfff429d57",
+              "name": "photo_file_id",
+              "value": "={{ $json.message.photo?.[$json.message.photo.length - 1]?.file_id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4b6b1743-7f98-4028-97e2-02a9fecde376",
+              "name": "text",
+              "value": "={{ $json.message.text || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        192
+      ],
+      "id": "b2c455d3-3930-47e1-9875-0d1d49dfd8f3",
+      "name": "Normalize"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.photo_file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        192
+      ],
+      "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
+      "name": "Get image",
+      "webhookId": "6dd8b0df-0fb0-45e7-a723-515facce1309",
+      "credentials": {
+        "telegramApi": {
+          "id": "5MkzmwDMblVJ4vqP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('Normalize').item.json.date_iso }}",
+            "Type": "={{ $json.parsed[$json.parsed.length - 1].type }}",
+            "Category": "={{ $json.parsed[$json.parsed.length - 1].category }}",
+            "Description": "={{ $json.parsed[$json.parsed.length - 1].description }}",
+            "Amount": "={{ $json.parsed[$json.parsed.length - 1].amount }}",
+            "Source": "={{ $json.parsed[$json.parsed.length - 1].source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        288
+      ],
+      "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "s0r8f5SwaYDX6QK7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6399afab-7c09-4558-ad92-75826a723189",
+              "name": "=parsed",
+              "value": "={{ $json.choices[$json.choices.length - 1].message.content }}",
+              "type": "array"
+            },
+            {
+              "id": "7c31c0fd-5859-4c73-8568-852ff84bbe52",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1b59d921-b35a-4a82-89a8-0e75241588b3",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        288
+      ],
+      "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
+      "name": "Parse AI"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/parse/image",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "helloworld"
+            },
+            {
+              "name": "language",
+              "value": "eng"
+            },
+            {
+              "name": "isOverlayRequired",
+              "value": "false"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        192
+      ],
+      "id": "34f721c1-9cda-44e6-a640-56ee4736095a",
+      "name": "Apply OCR"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b3b4f63-4ae8-4269-b750-6e0d759b0771",
+              "name": "raw_input",
+              "value": "={{ $json.ParsedResults[0].ParsedText }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        192
+      ],
+      "id": "b2e7e668-d863-4605-b4d0-487921c7d4cf",
+      "name": "Set text to raw_input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1814498-c4f5-4879-9a04-d829346f9556",
+              "name": "raw_input",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        384
+      ],
+      "id": "458ced93-f181-4353-a7ba-f6822df1d43a",
+      "name": "Set text to raw_input1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ***REMOVED***"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Title",
+              "value": "Expense Tracker n8n"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    model: \"openai/gpt-4o-mini\",\n    temperature: 0,\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends short Telegram-style transaction logs. They are often incomplete phrases like:\\n- jeep - 8 php - onhand\\n- mercury drug 670.50 credit card\\n- allowance 1500\\n- grocery 1250 gcash\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains allowance, salary, scholarship → type = income\\n- Otherwise → type = expense\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n\\nAmount rules:\\n- Extract the numeric value exactly as written in the input.\\n- Never modify, round, or estimate.\\n- If no number exists, set amount = 0.\\n\\nSource rules:\\n- If input contains 'credit' or 'credit card' → source = 'Credit'\\n- If contains GCash, BPI, Maya, Landbank → use that exact word\\n- If input does not specify source → source = 'Onhand'\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        288
+      ],
+      "id": "ea9fa4ec-6de6-405d-8950-20d650b26075",
+      "name": "Extract info to JSON format"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3b3a9e5f-d9fb-4bf2-80c2-504cc691227d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "s0r8f5SwaYDX6QK7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst start = new Date(now.getFullYear(), now.getMonth(), 1);\nconst end = new Date(now.getFullYear(), now.getMonth() + 1, 1);\n\nconst rows = items.map(i => i.json);\n\n// adjust these keys to your sheet column names\n// Date, Type, Category, Description, Amount, Source\nconst filtered = rows.filter(r => {\n  const d = new Date(r.Date);\n  return d >= start && d < end;\n});\n\nreturn filtered.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "340912f4-08bc-43d2-a923-b0407af267be",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nconst wantCategories = new Set([\"miscellaneous\", \"self-care\"]); // adjust if you want\nconst expenseTotals = {};\nconst incomeTotals = {};\n\nlet totalExpense = 0;\nlet totalIncome = 0;\nlet needs = 0;\nlet wants = 0;\n\nfor (const r of rows) {\n  const type = (r.Type || \"\").toLowerCase();\n  const cat = (r.Category || \"\").toLowerCase();\n  const amt = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n\n    if (wantCategories.has(cat)) wants += amt;\n    else needs += amt;\n  }\n}\n\nconst needsPct = totalExpense ? (needs / totalExpense) * 100 : 0;\nconst wantsPct = totalExpense ? (wants / totalExpense) * 100 : 0;\n\nreturn [{\n  json: {\n    totalExpense,\n    totalIncome,\n    expenseTotals,\n    incomeTotals,\n    needs,\n    wants,\n    needsPct,\n    wantsPct,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "0de08a65-4c0b-40d4-a749-3fcdd9b2b900",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ed9cb90-e471-4412-aa0e-ab96b3647a05",
+              "name": "=reply_text",
+              "value": "={{  \n`📅 This month summary\n\n💸 Expenses: ₱${$json.totalExpense.toFixed(2)}\n💰 Income: ₱${$json.totalIncome.toFixed(2)}\n🧺 Needs: ₱${$json.needs.toFixed(2)} (${ $json.needsPct.toFixed(1)}%)\n🎉 Wants: ₱${$json.wants.toFixed(2)} (${ $json.wantsPct.toFixed(1)}%)\n\n📌 Expense by category:\n${Object.entries($json.expenseTotals)\n  .sort((a,b)=>b[1]-a[1])\n  .map(([k,v])=>`- ${k}: ₱${v.toFixed(2)}`)\n  .join(\"\\n\")}\n📌 Income by category:\n${Object.entries($json.incomeTotals)\n  .sort((a,b)=>b[1]-a[1])\n  .map(([k,v])=>`- ${k}: ₱${v.toFixed(2)}`)\n  .join(\"\\n\")}\n`  \n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        0
+      ],
+      "id": "2898196a-d8a6-4eb3-ab2b-e873b996431e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
+      "name": "Send a text message",
+      "webhookId": "b31acdeb-c0fe-4e5a-b9a4-d0d7dc40fdef",
+      "credentials": {
+        "telegramApi": {
+          "id": "5MkzmwDMblVJ4vqP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'summary'": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If message has photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If message has photo": {
+      "main": [
+        [
+          {
+            "node": "Get image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set text to raw_input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image": {
+      "main": [
+        [
+          {
+            "node": "Apply OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "If text contains 'summary'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply OCR": {
+      "main": [
+        [
+          {
+            "node": "Set text to raw_input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set text to raw_input": {
+      "main": [
+        [
+          {
+            "node": "Extract info to JSON format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set text to raw_input1": {
+      "main": [
+        [
+          {
+            "node": "Extract info to JSON format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract info to JSON format": {
+      "main": [
+        [
+          {
+            "node": "Parse AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d10dafed-fa88-434e-b07b-d629175ba754",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48936346723d79e4f25d7d91cbcadb629760e9475e677dadb70ec847181259a9"
+  },
+  "id": "NYhbKj2kTQfbNYlS",
+  "tags": []
+}

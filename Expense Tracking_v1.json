@@ -1177,6 +1177,127 @@
       ],
       "id": "b9bc18e0-32ab-4c8f-840d-6f2e7c8f0c09",
       "name": "Filter transactions for period1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2240,
+        928
+      ],
+      "id": "6c3a431e-b7b6-43dd-893c-4194478ff128",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=449480570#gid=449480570",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2016,
+        928
+      ],
+      "id": "d03859d4-ea0f-46a9-8b2c-8250a1d6db62",
+      "name": "Get Payments rows3",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\n// Normalize helpers\nconst normSource = (s) => String(s ?? '').trim() || 'Unknown';\nconst toNumber = (v) => {\n  const n = Number(String(v ?? '').replace(/,/g, '').trim());\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst balances = {};\nlet total = 0;\n\nfor (const r of rows) {\n  const source = normSource(r.Source);\n  const amt = toNumber(r.Amount);\n\n  balances[source] = (balances[source] || 0) + amt;\n  total += amt;\n}\n\n// Create a sorted array for output formatting\nconst breakdown = Object.entries(balances)\n  .map(([source, amount]) => ({ source, amount }))\n  .sort((a, b) => b.amount - a.amount);\n\nreturn [{\n  json: {\n    breakdown,\n    total,\n    count: rows.length,\n    no_rows: rows.length === 0,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        928
+      ],
+      "id": "57dc3464-fbe7-4537-9572-84a0cffeed7b",
+      "name": "Aggregate balances3"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=1006581254#gid=1006581254",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toISOString() }}",
+            "Total Balance": "={{ $json.total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Balance",
+              "displayName": "Total Balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1568,
+        928
+      ],
+      "id": "89ee163c-9de6-45ae-a5e7-c31bb9152c84",
+      "name": "Append row to \"Balance Logs\"",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1670,6 +1791,39 @@
           }
         ]
       ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get Payments rows3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payments rows3": {
+      "main": [
+        [
+          {
+            "node": "Aggregate balances3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate balances3": {
+      "main": [
+        [
+          {
+            "node": "Append row to \"Balance Logs\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1678,7 +1832,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "10652261-a74e-4b20-b662-352ece27a340",
+  "versionId": "dc055d37-5aea-45f9-ae8f-33ecfcd86c6f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "REDACTED"

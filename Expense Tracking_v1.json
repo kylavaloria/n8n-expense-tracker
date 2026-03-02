@@ -453,7 +453,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "chatId": "={{ $('Normalize').first().json.chat_id }}",
         "text": "={{ $json.reply_text }}",
         "additionalFields": {}
       },
@@ -1832,7 +1832,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "dc055d37-5aea-45f9-ae8f-33ecfcd86c6f",
+  "versionId": "c7690209-1dce-4ec4-9e79-33b815ce8db2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "48936346723d79e4f25d7d91cbcadb629760e9475e677dadb70ec847181259a9"

@@ -52,12 +52,26 @@ flowchart TD
   B --> C{Command type}
 ​
   C -->|help| H[Send prompt guide]
-  C -->|balance| BL[Fetch Payments rows] --> BA[Aggregate balances] --> BT[Send balance message]
-  C -->|current| CR[Fetch Transactions rows] --> CF[Filter to target day] --> CA[Aggregate daily totals] --> CT[Send daily summary]
-  C -->|summary| SR[Fetch Transactions rows] --> SF[Filter to month] --> SA[Aggregate totals] --> ST[Send summary]
+​
+  C -->|balance| BL[Fetch Payments rows]
+  BL --> BA[Aggregate balances]
+  BA --> BT[Send balance message]
+​
+  C -->|current| CR[Fetch Transactions rows]
+  CR --> CF[Filter to target day]
+  CF --> CA[Aggregate daily totals]
+  CA --> CT[Send daily summary]
+​
+  C -->|summary| SR[Fetch Transactions rows]
+  SR --> SF[Filter to month]
+  SF --> SA[Aggregate totals]
+  SA --> ST[Send summary]
+​
   C -->|transaction| D{Has photo}
 ​
-  D -->|yes| E[Get image] --> F[OCR space] --> G[raw input text]
+  D -->|yes| E[Get image]
+  E --> F[OCR space]
+  F --> G[Raw input text]
   D -->|no| G
 ​
   G --> I[LLM parse to JSON]

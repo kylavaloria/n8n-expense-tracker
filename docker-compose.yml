@@ -6,8 +6,13 @@ services:
     container_name: n8n
     ports:
       - "5678:5678"
-    env_file:
-      - .env
+    environment:
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-}
+      N8N_PORT: ${N8N_PORT:-5678}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-https}
+      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      Telegram_Id: ${Telegram_Id:-}
     volumes:
       - n8n_data:/home/node/.n8n
     restart: unless-stopped

@@ -1,18 +1,3 @@
-locals {
-  project_name_sanitized      = lower(regexreplace(var.project_name, "[^a-z0-9]", ""))
-  project_name_compact        = length(local.project_name_sanitized) > 0 ? local.project_name_sanitized : "n8nexpense"
-  log_analytics_workspace     = coalesce(var.log_analytics_workspace_name, "log-${var.project_name}")
-  container_app_environment   = coalesce(var.container_app_environment_name, "cae-${var.project_name}")
-  webhook_url_effective       = coalesce(var.webhook_url, "https://${var.container_app_name}.${azurerm_container_app_environment.env.default_domain}")
-}
-
-# Generates a short suffix to keep globally-unique resource names (for storage account).
-resource "random_string" "suffix" {
-  length  = 5
-  special = false
-  upper   = false
-}
-
 # Creates the resource group that contains all n8n infrastructure resources.
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
@@ -21,7 +6,7 @@ resource "azurerm_resource_group" "rg" {
 
 # Provides centralized logging for Azure Container Apps diagnostics and revisions.
 resource "azurerm_log_analytics_workspace" "law" {
-  name                = local.log_analytics_workspace
+  name                = var.log_analytics_workspace_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "PerGB2018"
@@ -30,7 +15,7 @@ resource "azurerm_log_analytics_workspace" "law" {
 
 # Creates the Azure Container Apps environment that hosts the n8n Container App.
 resource "azurerm_container_app_environment" "env" {
-  name                       = local.container_app_environment
+  name                       = var.container_app_environment_name
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
@@ -38,7 +23,7 @@ resource "azurerm_container_app_environment" "env" {
 
 # Stores persistent n8n workflow/state data in Azure Files.
 resource "azurerm_storage_account" "sa" {
-  name                     = coalesce(var.storage_account_name, substr("${local.project_name_compact}${random_string.suffix.result}", 0, 24))
+  name                     = var.storage_account_name
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -95,8 +80,8 @@ resource "azurerm_container_app" "app" {
     container {
       name   = "n8n"
       image  = "n8nio/n8n:latest"
-      cpu    = var.container_cpu
-      memory = var.container_memory
+      cpu    = 0.5
+      memory = "1Gi"
 
       env {
         name        = "N8N_ENCRYPTION_KEY"
@@ -115,7 +100,7 @@ resource "azurerm_container_app" "app" {
 
       env {
         name  = "WEBHOOK_URL"
-        value = local.webhook_url_effective
+        value = var.webhook_url
       }
 
       env {

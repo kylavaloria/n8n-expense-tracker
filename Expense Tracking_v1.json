@@ -12,7 +12,7 @@
       "typeVersion": 1.2,
       "position": [
         -2240,
-        -128
+        -288
       ],
       "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
       "name": "Telegram Trigger",
@@ -60,8 +60,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1344,
-        64
+        -1120,
+        0
       ],
       "id": "ef3527e3-d124-4005-aadf-f5e5789331f0",
       "name": "If text contains 'summary'"
@@ -95,8 +95,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1120,
-        160
+        -896,
+        96
       ],
       "id": "8eae1d71-57c5-4ffe-843e-c2837eae5c36",
       "name": "If message has photo"
@@ -143,7 +143,7 @@
       "typeVersion": 3.4,
       "position": [
         -2016,
-        -128
+        -288
       ],
       "id": "b2c455d3-3930-47e1-9875-0d1d49dfd8f3",
       "name": "Normalize"
@@ -157,8 +157,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -896,
-        64
+        -672,
+        0
       ],
       "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
       "name": "Get image",
@@ -176,13 +176,13 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "=https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
-          "mode": "url"
+          "value": "Transactions",
+          "mode": "name"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        224,
-        160
+        448,
+        96
       ],
       "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
       "name": "Append row in sheet",
@@ -300,8 +300,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        160
+        224,
+        96
       ],
       "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
       "name": "Parse AI"
@@ -338,8 +338,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -672,
-        64
+        -448,
+        0
       ],
       "id": "34f721c1-9cda-44e6-a640-56ee4736095a",
       "name": "Apply OCR"
@@ -361,8 +361,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        64
+        -224,
+        0
       ],
       "id": "b2e7e668-d863-4605-b4d0-487921c7d4cf",
       "name": "Set text to raw_input"
@@ -384,8 +384,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        256
+        -224,
+        192
       ],
       "id": "458ced93-f181-4353-a7ba-f6822df1d43a",
       "name": "Set text to raw_input1"
@@ -399,7 +399,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-or-v1-{{$env.OPENROUTER_API_KEY}}"
+              "value": "REDACTED_API_KEY"
             },
             {
               "name": "Content-Type",
@@ -413,14 +413,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n  {\n    model: \"openai/gpt-4o-mini\",\n    temperature: 0,\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends short Telegram-style transaction logs. They are often incomplete phrases like:\\n- jeep - 8 php - onhand\\n- mercury drug 670.50 credit card\\n- allowance 1500\\n- grocery 1250 gcash\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains allowance, salary, scholarship → type = income\\n- Otherwise → type = expense\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n\\nAmount rules:\\n- Extract the numeric value exactly as written in the input.\\n- Never modify, round, or estimate.\\n- If no number exists, set amount = 0.\\n\\nSource rules:\\n- If input contains 'credit' or 'credit card' → source = 'Credit'\\n- If contains GCash, BPI, Maya, Landbank → use that exact word\\n- If input does not specify source → source = 'Onhand'\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
+        "jsonBody": "={{\n  {\n    model: \"openai/gpt-4o-mini\",\n    temperature: 0,\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends ONLY template-form transaction logs in this exact format.\\n\\nEXPENSE FORMAT\\nAmount: <number>\\nDescription: <text>\\nMode of Payment: <account>\\n\\nINCOME FORMAT\\nAmount: <number>\\nDescription: <text>\\nSource Account: <account>\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains \\\"Mode of Payment:\\\" → type = expense\\n- If the input contains \\\"Source Account:\\\" → type = income\\n- If neither is present → return []\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n- Description MUST come from the line that starts with \\\"Description:\\\".\\n\\nAmount rules:\\n- Amount MUST come from the line that starts with \\\"Amount:\\\".\\n- Extract the numeric value exactly as written after \\\"Amount:\\\".\\n- Never modify, round, or estimate.\\n- If \\\"Amount:\\\" is missing or not a valid number → return []\\n\\nSource rules:\\n- For expense: source MUST come from the line that starts with \\\"Mode of Payment:\\\".\\n- For income: source MUST come from the line that starts with \\\"Source Account:\\\".\\n- Use the value exactly as written after the colon.\\n- If the required line is missing → return []\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -224,
-        160
+        0,
+        96
       ],
       "id": "ea9fa4ec-6de6-405d-8950-20d650b26075",
       "name": "Extract info to JSON format"
@@ -432,8 +432,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -896,
-        -128
+        -672,
+        -192
       ],
       "id": "340912f4-08bc-43d2-a923-b0407af267be",
       "name": "Code in JavaScript"
@@ -445,8 +445,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        -128
+        -448,
+        -192
       ],
       "id": "0de08a65-4c0b-40d4-a749-3fcdd9b2b900",
       "name": "Code in JavaScript1"
@@ -460,8 +460,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -224,
-        -128
+        0,
+        -192
       ],
       "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
       "name": "Send a text message",
@@ -500,8 +500,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1568,
-        -32
+        -1344,
+        -96
       ],
       "id": "197204c6-f01e-435e-b6b3-f10b142f98c2",
       "name": "If text contains 'current'"
@@ -513,8 +513,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1344,
-        -320
+        -1120,
+        -384
       ],
       "id": "3afa7384-4a9a-4529-bc61-0bbdb94e5a84",
       "name": "Parse current date"
@@ -526,8 +526,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -896,
-        -320
+        -672,
+        -384
       ],
       "id": "6c41394f-afbe-4f58-a90d-19279d04ad7c",
       "name": "Filter rows to target day",
@@ -540,8 +540,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        -320
+        -448,
+        -384
       ],
       "id": "b0801d78-124b-482f-8a9f-75bc84e37deb",
       "name": "Aggregate daily totals"
@@ -555,8 +555,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -224,
-        -320
+        0,
+        -384
       ],
       "id": "3cd701e4-9ce8-4338-8940-12a7cb974b91",
       "name": "Send Telegram message",
@@ -595,8 +595,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1792,
-        -128
+        -1568,
+        -192
       ],
       "id": "9d985f7f-2d96-4786-b618-00f8b164cead",
       "name": "If text contains 'balance'"
@@ -606,21 +606,21 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=449480570#gid=449480570",
-          "mode": "url"
+          "value": "Payments",
+          "mode": "name"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -1568,
-        -512
+        -1344,
+        -576
       ],
       "id": "f3379dc9-ef3b-4b0a-a635-45ba1f1479e1",
       "name": "Get Payments rows",
@@ -636,22 +636,21 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "mode": "id",
+          "value": "REDACTED"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "url",
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
-          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+          "value": "Transactions",
+          "mode": "name"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -1120,
-        -320
+        -896,
+        -384
       ],
       "id": "1831c031-21f5-4a55-89ab-e0607778b84c",
       "name": "Get Transactions rows",
@@ -667,22 +666,21 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "url",
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
-          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+          "value": "Transactions",
+          "mode": "name"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -1120,
-        -128
+        -896,
+        -192
       ],
       "id": "3b3a9e5f-d9fb-4bf2-80c2-504cc691227d",
       "name": "Get Transactions rows1",
@@ -700,8 +698,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1344,
-        -512
+        -1120,
+        -576
       ],
       "id": "660f1963-8d01-4948-91f0-85dcefb7fc08",
       "name": "Aggregate balances"
@@ -715,8 +713,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -896,
-        -512
+        -672,
+        -576
       ],
       "id": "6b74334e-c59e-44fc-94f1-cd851d9fabcf",
       "name": "Telegram Send Message",
@@ -745,8 +743,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1120,
-        -512
+        -896,
+        -576
       ],
       "id": "0281f2f4-b5d3-4dac-b907-61a2f1457771",
       "name": "Build reply text"
@@ -768,8 +766,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        -128
+        -224,
+        -192
       ],
       "id": "2898196a-d8a6-4eb3-ab2b-e873b996431e",
       "name": "Build reply text1"
@@ -791,8 +789,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        -320
+        -224,
+        -384
       ],
       "id": "03779857-e271-440f-bf68-00ca2258f2d6",
       "name": "Build reply text2"
@@ -811,7 +809,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        480
+        416
       ],
       "id": "4b3478fc-9d4e-4719-822d-9c1ea2493b57",
       "name": "Schedule Trigger"
@@ -821,14 +819,13 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "url",
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
-          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+          "value": "Transactions",
+          "mode": "name"
         },
         "options": {}
       },
@@ -836,7 +833,7 @@
       "typeVersion": 4.7,
       "position": [
         -1568,
-        480
+        416
       ],
       "id": "0d88838f-9ce7-478d-ac24-b5e3f28c6e9c",
       "name": "Get Transactions rows2",
@@ -855,7 +852,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        480
+        416
       ],
       "id": "ad5ff02d-c18a-4212-a291-7ef4dae7c4f7",
       "name": "Filter rows to period"
@@ -868,7 +865,7 @@
       "typeVersion": 2,
       "position": [
         -1120,
-        480
+        416
       ],
       "id": "2215935e-e75d-4d28-98ef-fa29152cfe78",
       "name": "Aggregate totals"
@@ -878,13 +875,13 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=449480570#gid=449480570",
-          "mode": "url"
+          "value": "Payments",
+          "mode": "name"
         },
         "options": {}
       },
@@ -892,7 +889,7 @@
       "typeVersion": 4.7,
       "position": [
         -896,
-        480
+        416
       ],
       "id": "4b82d75f-1f35-4488-969e-c1c634473b64",
       "name": "Get Payments rows1",
@@ -911,7 +908,7 @@
       "typeVersion": 2,
       "position": [
         -672,
-        480
+        416
       ],
       "id": "e50aa0d2-a64e-427c-8e52-7a6ede7a1049",
       "name": "Aggregate balances1"
@@ -934,14 +931,14 @@
       "typeVersion": 3.4,
       "position": [
         -448,
-        480
+        416
       ],
       "id": "a6287dd9-3387-4c9d-b5b9-c7bb43366f6f",
       "name": "Build final report text"
     },
     {
       "parameters": {
-        "chatId": "={{$env.Telegram_Id}}",
+        "chatId": "={{ $json.chat_id }}",
         "text": "={{ $json.reply_text }}",
         "additionalFields": {}
       },
@@ -949,7 +946,7 @@
       "typeVersion": 1.2,
       "position": [
         -224,
-        480
+        416
       ],
       "id": "1dc0150c-e907-4948-9a93-2b6140662095",
       "name": "Send a text message1",
@@ -969,7 +966,7 @@
       "typeVersion": 2,
       "position": [
         -2016,
-        480
+        416
       ],
       "id": "4466eb30-c627-45db-aeec-9cc58f40d85c",
       "name": "Set report type"
@@ -982,7 +979,7 @@
       "typeVersion": 2,
       "position": [
         -1344,
-        480
+        416
       ],
       "id": "efbf4270-ec29-4f06-9e69-2d445e95fafd",
       "name": "Filter transactions for period"
@@ -1002,7 +999,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        704
+        640
       ],
       "id": "883d763e-69e9-4b2b-9f6f-bbacdfc06d2c",
       "name": "Schedule Trigger1"
@@ -1012,14 +1009,13 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "mode": "id",
+          "value": "REDACTED"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "url",
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=0#gid=0",
-          "__regex": "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/[0-9a-zA-Z\\-_]+.*\\#gid=([0-9]+)"
+          "value": "Transactions",
+          "mode": "name"
         },
         "options": {}
       },
@@ -1027,7 +1023,7 @@
       "typeVersion": 4.7,
       "position": [
         -1568,
-        704
+        640
       ],
       "id": "511ea81f-65bc-467d-955a-c15185bdca26",
       "name": "Get Transactions rows3",
@@ -1046,7 +1042,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        704
+        640
       ],
       "id": "b4c199c3-541b-48ed-a21c-17b4df1cef9a",
       "name": "Filter rows to period1"
@@ -1059,7 +1055,7 @@
       "typeVersion": 2,
       "position": [
         -1120,
-        704
+        640
       ],
       "id": "eaf82e46-6d61-426f-9cda-d1f06dc63cff",
       "name": "Aggregate totals1"
@@ -1069,13 +1065,13 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "value": "REDACTED",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=449480570#gid=449480570",
-          "mode": "url"
+          "value": "Payments",
+          "mode": "name"
         },
         "options": {}
       },
@@ -1083,7 +1079,7 @@
       "typeVersion": 4.7,
       "position": [
         -896,
-        704
+        640
       ],
       "id": "d6cd6e2e-2fb9-49d3-aa46-d88fb3ec1aef",
       "name": "Get Payments rows2",
@@ -1102,7 +1098,7 @@
       "typeVersion": 2,
       "position": [
         -672,
-        704
+        640
       ],
       "id": "a94b304a-89f3-4d3a-aa18-1c1dae37a9c5",
       "name": "Aggregate balances2"
@@ -1125,14 +1121,14 @@
       "typeVersion": 3.4,
       "position": [
         -448,
-        704
+        640
       ],
       "id": "108064f8-0f0d-44cb-b805-1ecfc3039464",
       "name": "Build final report text1"
     },
     {
       "parameters": {
-        "chatId": "={{$env.Telegram_Id}}",
+        "chatId": "={{ $json.chat_id }}",
         "text": "={{ $json.reply_text }}",
         "additionalFields": {}
       },
@@ -1140,7 +1136,7 @@
       "typeVersion": 1.2,
       "position": [
         -224,
-        704
+        640
       ],
       "id": "0dd3d88b-f15d-41e5-8cf1-f3eb44db86e2",
       "name": "Send a text message2",
@@ -1160,7 +1156,7 @@
       "typeVersion": 2,
       "position": [
         -2016,
-        704
+        640
       ],
       "id": "662f5b93-68fc-4f39-b5fc-bd65e93d6e20",
       "name": "Set report type1"
@@ -1173,7 +1169,7 @@
       "typeVersion": 2,
       "position": [
         -1344,
-        704
+        640
       ],
       "id": "b9bc18e0-32ab-4c8f-840d-6f2e7c8f0c09",
       "name": "Filter transactions for period1"
@@ -1190,7 +1186,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        928
+        864
       ],
       "id": "6c3a431e-b7b6-43dd-893c-4194478ff128",
       "name": "Schedule Trigger2"
@@ -1214,7 +1210,7 @@
       "typeVersion": 4.7,
       "position": [
         -2016,
-        928
+        864
       ],
       "id": "d03859d4-ea0f-46a9-8b2c-8250a1d6db62",
       "name": "Get Payments rows3",
@@ -1233,7 +1229,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        928
+        864
       ],
       "id": "57dc3464-fbe7-4537-9572-84a0cffeed7b",
       "name": "Aggregate balances3"
@@ -1244,13 +1240,13 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
-          "mode": "url"
+          "mode": "id",
+          "value": "REDACTED"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=1006581254#gid=1006581254",
-          "mode": "url"
+          "value": "Balance Logs",
+          "mode": "name"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -1288,7 +1284,7 @@
       "typeVersion": 4.7,
       "position": [
         -1568,
-        928
+        864
       ],
       "id": "89ee163c-9de6-45ae-a5e7-c31bb9152c84",
       "name": "Append row to \"Balance Logs\"",
@@ -1296,6 +1292,111 @@
         "googleApi": {
           "id": "REDACTED",
           "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3187dc63-4b42-46bf-9687-400654f9032c",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "67131de1-f2d0-450c-97ea-fdf7faa52eee",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7f5f1fac-9391-4768-9140-9f7713358a0e",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "start",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f780b8a3-4ef0-4800-9e70-8164b1d8c53c",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "help",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1792,
+        -288
+      ],
+      "id": "d0d0c80a-4de4-4d22-898d-5034f18bcf7a",
+      "name": "If text contains 'help/start'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67ffa8a7-1cea-42f6-8bfc-c5fa6ad963db",
+              "name": "reply_text",
+              "value": "=PROMPT GUIDE\n\n1) Send expense:\n```\nAmount:\nDescription:\nMode of Payment:\n```\n\n2) Send income:\n```\nAmount:\nDescription:\nSource Account:\n```\n\n3) Monthly summary (current month):\nSend: /summary\n\n4) Daily summary (specific day):\nSend: /current\nOr: /current YYYY-MM-DD\nExample: /current 2026-03-02\n\n5) Current balance:\nSend: /balance",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        -768
+      ],
+      "id": "263eb569-3b8c-4aca-bbbf-97a9489f912d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1344,
+        -768
+      ],
+      "id": "59774693-2944-4b5a-813e-c4b0e4bee3af",
+      "name": "Telegram Send Message1",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
         }
       }
     }
@@ -1364,7 +1465,7 @@
       "main": [
         [
           {
-            "node": "If text contains 'balance'",
+            "node": "If text contains 'help/start'",
             "type": "main",
             "index": 0
           }
@@ -1824,6 +1925,35 @@
           }
         ]
       ]
+    },
+    "If text contains 'help/start'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'balance'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1832,7 +1962,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "c7690209-1dce-4ec4-9e79-33b815ce8db2",
+  "versionId": "67e43295-eb7d-4bdf-b388-48d4b8d50fba",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "REDACTED"

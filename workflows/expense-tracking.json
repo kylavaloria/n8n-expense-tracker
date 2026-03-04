@@ -1,9 +1,1972 @@
 {
   "name": "Expense Tracking",
-  "nodes": [],
-  "connections": {},
-  "active": false,
-  "settings": {},
-  "versionId": "00000000-0000-0000-0000-000000000001"
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -288
+      ],
+      "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
+      "name": "Telegram Trigger",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0029de99-2a9f-442f-9913-8b4a8ed270d6",
+              "leftValue": "={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "summary",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "44d38a46-e281-4e09-a3ae-cba806b914ee",
+              "leftValue": "={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "summarize",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1120,
+        0
+      ],
+      "id": "ef3527e3-d124-4005-aadf-f5e5789331f0",
+      "name": "If text contains 'summary'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3a166a24-4739-4294-9ca7-c2592400d95f",
+              "leftValue": "={{ $json.photo_file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -896,
+        96
+      ],
+      "id": "8eae1d71-57c5-4ffe-843e-c2837eae5c36",
+      "name": "If message has photo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4b713a1-b74c-4957-8827-fb02bccb04ef",
+              "name": "chat_id",
+              "value": "={{ $json.message?.chat?.id || $json.body?.message?.chat?.id || $json.chat?.id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "6e562043-6495-4294-8401-8341d88718de",
+              "name": "message_id",
+              "value": "={{ $json.message?.message_id || $json.body?.message?.message_id || $json.message_id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "c325c2fb-90e9-4944-8dba-7322ece198b7",
+              "name": "date_iso",
+              "value": "={{ new Date($json.message.date * 1000).toISOString() }}",
+              "type": "string"
+            },
+            {
+              "id": "ca99eedb-5bbf-4ad2-8155-52dfff429d57",
+              "name": "photo_file_id",
+              "value": "={{ $json.message.photo?.[$json.message.photo.length - 1]?.file_id || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4b6b1743-7f98-4028-97e2-02a9fecde376",
+              "name": "text",
+              "value": "={{ $json.message.text || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2016,
+        -288
+      ],
+      "id": "b2c455d3-3930-47e1-9875-0d1d49dfd8f3",
+      "name": "Normalize"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.photo_file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        0
+      ],
+      "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
+      "name": "Get image",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('Normalize').item.json.date_iso }}",
+            "Type": "={{ $json.parsed[$json.parsed.length - 1].type }}",
+            "Category": "={{ $json.parsed[$json.parsed.length - 1].category }}",
+            "Description": "={{ $json.parsed[$json.parsed.length - 1].description }}",
+            "Amount": "={{ $json.parsed[$json.parsed.length - 1].amount }}",
+            "Source": "={{ $json.parsed[$json.parsed.length - 1].source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        96
+      ],
+      "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6399afab-7c09-4558-ad92-75826a723189",
+              "name": "=parsed",
+              "value": "={{ $json.choices[$json.choices.length - 1].message.content }}",
+              "type": "array"
+            },
+            {
+              "id": "7c31c0fd-5859-4c73-8568-852ff84bbe52",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1b59d921-b35a-4a82-89a8-0e75241588b3",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        96
+      ],
+      "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
+      "name": "Parse AI"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/parse/image",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "REDACTED"
+            },
+            {
+              "name": "language",
+              "value": "eng"
+            },
+            {
+              "name": "isOverlayRequired",
+              "value": "false"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -448,
+        0
+      ],
+      "id": "34f721c1-9cda-44e6-a640-56ee4736095a",
+      "name": "Apply OCR"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b3b4f63-4ae8-4269-b750-6e0d759b0771",
+              "name": "raw_input",
+              "value": "={{ $json.ParsedResults[0].ParsedText }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "b2e7e668-d863-4605-b4d0-487921c7d4cf",
+      "name": "Set text to raw_input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1814498-c4f5-4879-9a04-d829346f9556",
+              "name": "raw_input",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        192
+      ],
+      "id": "458ced93-f181-4353-a7ba-f6822df1d43a",
+      "name": "Set text to raw_input1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Title",
+              "value": "Expense Tracker n8n"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    model: \"openai/gpt-4o-mini\",\n    temperature: 0,\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends ONLY template-form transaction logs in this exact format.\\n\\nEXPENSE FORMAT\\nAmount: <number>\\nDescription: <text>\\nMode of Payment: <account>\\n\\nINCOME FORMAT\\nAmount: <number>\\nDescription: <text>\\nSource Account: <account>\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains \\\"Mode of Payment:\\\" → type = expense\\n- If the input contains \\\"Source Account:\\\" → type = income\\n- If neither is present → return []\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n- Description MUST come from the line that starts with \\\"Description:\\\".\\n\\nAmount rules:\\n- Amount MUST come from the line that starts with \\\"Amount:\\\".\\n- Extract the numeric value exactly as written after \\\"Amount:\\\".\\n- Never modify, round, or estimate.\\n- If \\\"Amount:\\\" is missing or not a valid number → return []\\n\\nSource rules:\\n- For expense: source MUST come from the line that starts with \\\"Mode of Payment:\\\".\\n- For income: source MUST come from the line that starts with \\\"Source Account:\\\".\\n- Use the value exactly as written after the colon.\\n- If the required line is missing → return []\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        96
+      ],
+      "id": "ea9fa4ec-6de6-405d-8950-20d650b26075",
+      "name": "Extract info to JSON format"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst start = new Date(now.getFullYear(), now.getMonth(), 1);\nconst end = new Date(now.getFullYear(), now.getMonth() + 1, 1);\n\nconst rows = items.map(i => i.json);\n\n// adjust these keys to your sheet column names\n// Date, Type, Category, Description, Amount, Source\nconst filtered = rows.filter(r => {\n  const d = new Date(r.Date);\n  return d >= start && d < end;\n});\n\nreturn filtered.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -192
+      ],
+      "id": "340912f4-08bc-43d2-a923-b0407af267be",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nconst wantCategories = new Set([\"miscellaneous\", \"self-care\"]); // adjust if you want\nconst expenseTotals = {};\nconst incomeTotals = {};\n\nlet totalExpense = 0;\nlet totalIncome = 0;\nlet needs = 0;\nlet wants = 0;\n\nfor (const r of rows) {\n  const type = (r.Type || \"\").toLowerCase();\n  const cat = (r.Category || \"\").toLowerCase();\n  const amt = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n\n    if (wantCategories.has(cat)) wants += amt;\n    else needs += amt;\n  }\n}\n\nconst needsPct = totalExpense ? (needs / totalExpense) * 100 : 0;\nconst wantsPct = totalExpense ? (wants / totalExpense) * 100 : 0;\n\nreturn [{\n  json: {\n    totalExpense,\n    totalIncome,\n    expenseTotals,\n    incomeTotals,\n    needs,\n    wants,\n    needsPct,\n    wantsPct,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -192
+      ],
+      "id": "0de08a65-4c0b-40d4-a749-3fcdd9b2b900",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Normalize').first().json.chat_id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -192
+      ],
+      "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
+      "name": "Send a text message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e8ad90c3-1cfd-44de-b8e1-3209b9601eae",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "current",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1344,
+        -96
+      ],
+      "id": "197204c6-f01e-435e-b6b3-f10b142f98c2",
+      "name": "If text contains 'current'"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = ($json.text || \"\").trim().toLowerCase();\n\n// Supports:\n// \"current\" -> today\n// \"current 2026-02-28\" -> that date (YYYY-MM-DD)\nlet target = null;\n\nconst m = text.match(/^current\\s+(\\d{4}-\\d{2}-\\d{2})$/);\nif (m) {\n  target = m[1];\n} else {\n  // today (local runtime time)\n  const now = new Date();\n  const yyyy = now.getFullYear();\n  const mm = String(now.getMonth() + 1).padStart(2, \"0\");\n  const dd = String(now.getDate()).padStart(2, \"0\");\n  target = `${yyyy}-${mm}-${dd}`;\n}\n\nreturn [{ json: { ...$json, target_date: target } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        -384
+      ],
+      "id": "3afa7384-4a9a-4529-bc61-0bbdb94e5a84",
+      "name": "Parse current date"
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $('Parse current date').first().json.target_date; // YYYY-MM-DD\n\nconst filtered = items.filter(i => {\n  const raw = i.json.Date || \"\";\n  const d = String(raw).slice(0, 10);\n  return d === target;\n});\n\n// If none matched, return ONE placeholder item so workflow continues\nif (filtered.length === 0) {\n  return [{\n    json: {\n      _no_rows: true,\n      Date: `${target}T00:00:00.000Z`,\n      Type: \"\",\n      Category: \"\",\n      Description: \"\",\n      Amount: 0,\n      Source: \"\",\n    }\n  }];\n}\n\nreturn filtered;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -384
+      ],
+      "id": "6c41394f-afbe-4f58-a90d-19279d04ad7c",
+      "name": "Filter rows to target day",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $('Parse current date').first().json.target_date; // YYYY-MM-DD\n\nlet totalExpense = 0;\nlet totalIncome = 0;\n\nconst expenseTotals = {};\nconst incomeTotals = {};\n\n// Ignore placeholder rows\nconst rows = items.map(i => i.json).filter(r => !r._no_rows);\n\nfor (const r of rows) {\n  const type = String(r.Type || \"\").toLowerCase();\n  const cat = String(r.Category || \"uncategorized\").toLowerCase();\n  const amt = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n  }\n}\n\nreturn [{\n  json: {\n    target_date: target,\n    totalExpense,\n    totalIncome,\n    expenseTotals,\n    incomeTotals,\n    count: rows.length,\n    no_transactions: rows.length === 0,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -384
+      ],
+      "id": "b0801d78-124b-482f-8a9f-75bc84e37deb",
+      "name": "Aggregate daily totals"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -384
+      ],
+      "id": "3cd701e4-9ce8-4338-8940-12a7cb974b91",
+      "name": "Send Telegram message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a100edcf-bf51-4452-a468-55e7503e53a6",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "balance",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1568,
+        -192
+      ],
+      "id": "9d985f7f-2d96-4786-b618-00f8b164cead",
+      "name": "If text contains 'balance'"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Payments",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1344,
+        -576
+      ],
+      "id": "f3379dc9-ef3b-4b0a-a635-45ba1f1479e1",
+      "name": "Get Payments rows",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REDACTED"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        -384
+      ],
+      "id": "1831c031-21f5-4a55-89ab-e0607778b84c",
+      "name": "Get Transactions rows",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        -192
+      ],
+      "id": "3b3a9e5f-d9fb-4bf2-80c2-504cc691227d",
+      "name": "Get Transactions rows1",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\n// Normalize helpers\nconst normSource = (s) => String(s ?? '').trim() || 'Unknown';\nconst toNumber = (v) => {\n  const n = Number(String(v ?? '').replace(/,/g, '').trim());\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst balances = {};\nlet total = 0;\n\nfor (const r of rows) {\n  const source = normSource(r.Source);\n  const amt = toNumber(r.Amount);\n\n  balances[source] = (balances[source] || 0) + amt;\n  total += amt;\n}\n\n// Create a sorted array for output formatting\nconst breakdown = Object.entries(balances)\n  .map(([source, amount]) => ({ source, amount }))\n  .sort((a, b) => b.amount - a.amount);\n\nreturn [{\n  json: {\n    breakdown,\n    total,\n    count: rows.length,\n    no_rows: rows.length === 0,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        -576
+      ],
+      "id": "660f1963-8d01-4948-91f0-85dcefb7fc08",
+      "name": "Aggregate balances"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        -576
+      ],
+      "id": "6b74334e-c59e-44fc-94f1-cd851d9fabcf",
+      "name": "Telegram Send Message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2641d75-015a-40e5-b6e6-a485333b524e",
+              "name": "=reply_text",
+              "value": "={{ \n$json.no_rows\n? `💳 Current balance\n\nNo rows found in Payments sheet.`\n: `💳 Current balance\n\n${($json.breakdown || [])\n  .map(x => `- ${x.source}: ₱${Number(x.amount || 0).toFixed(2)}`)\n  .join(\"\\n\")}\n\n--------------------\nTotal: ₱${Number($json.total || 0).toFixed(2)}\n`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -896,
+        -576
+      ],
+      "id": "0281f2f4-b5d3-4dac-b907-61a2f1457771",
+      "name": "Build reply text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ed9cb90-e471-4412-aa0e-ab96b3647a05",
+              "name": "=reply_text",
+              "value": "={{  \n`📅 This month summary\n\n💸 Expenses: ₱${$json.totalExpense.toFixed(2)}\n💰 Income: ₱${$json.totalIncome.toFixed(2)}\n🧺 Needs: ₱${$json.needs.toFixed(2)} (${ $json.needsPct.toFixed(1)}%)\n🎉 Wants: ₱${$json.wants.toFixed(2)} (${ $json.wantsPct.toFixed(1)}%)\n\n📌 Expense by category:\n${Object.entries($json.expenseTotals)\n  .sort((a,b)=>b[1]-a[1])\n  .map(([k,v])=>`- ${k}: ₱${v.toFixed(2)}`)\n  .join(\"\\n\")}\n📌 Income by category:\n${Object.entries($json.incomeTotals)\n  .sort((a,b)=>b[1]-a[1])\n  .map(([k,v])=>`- ${k}: ₱${v.toFixed(2)}`)\n  .join(\"\\n\")}\n`  \n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        -192
+      ],
+      "id": "2898196a-d8a6-4eb3-ab2b-e873b996431e",
+      "name": "Build reply text1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d58483a-6802-45f8-83b6-13af33584ddd",
+              "name": "reply_text",
+              "value": "={{ \n$json.no_transactions\n? `📍 Daily summary (${ $json.target_date })\n\nThere's no transactions logged for this day. ✅`\n: `📍 Daily summary (${ $json.target_date })\n\n💸 Expenses: ₱${Number($json.totalExpense || 0).toFixed(2)}\n💰 Income: ₱${Number($json.totalIncome || 0).toFixed(2)}\n🧾 Entries: ${$json.count || 0}\n\n📌 Expense by category:\n${\n  Object.entries($json.expenseTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n📌 Income by category:\n${\n  Object.entries($json.incomeTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        -384
+      ],
+      "id": "03779857-e271-440f-bf68-00ca2258f2d6",
+      "name": "Build reply text2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2240,
+        416
+      ],
+      "id": "4b3478fc-9d4e-4719-822d-9c1ea2493b57",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1568,
+        416
+      ],
+      "id": "0d88838f-9ce7-478d-ac24-b5e3f28c6e9c",
+      "name": "Get Transactions rows2",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Server is UTC. +8 = PHT.\nconst now = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);\n\nfunction toDateStr(d) {\n  const y = d.getUTCFullYear();\n  const m = String(d.getUTCMonth() + 1).padStart(2, '0');\n  const dd = String(d.getUTCDate()).padStart(2, '0');\n  return `${y}-${m}-${dd}`;\n}\n\n// Last Sunday → today (this Sunday)\nconst dow = now.getUTCDay(); // 0 = Sunday in PHT\nconst lastSunday = new Date(now);\nlastSunday.setUTCDate(now.getUTCDate() - dow - 7);\n\nreturn [{\n  json: {\n    ...$json,\n    report_start: toDateStr(lastSunday),\n    report_end:   toDateStr(now),\n    reportType:   \"weekly\",\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        416
+      ],
+      "id": "ad5ff02d-c18a-4212-a291-7ef4dae7c4f7",
+      "name": "Filter rows to period"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json).filter(r => !r._no_rows);\n\nconst wantCategories = new Set([\"miscellaneous\", \"self-care\"]);\nconst expenseTotals = {};\nconst incomeTotals = {};\n\nlet totalExpense = 0;\nlet totalIncome = 0;\nlet needs = 0;\nlet wants = 0;\n\nfor (const r of rows) {\n  const type = String(r.Type || \"\").toLowerCase();\n  const cat = String(r.Category || \"\").toLowerCase();\n  const amt = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n\n    if (wantCategories.has(cat)) wants += amt;\n    else needs += amt;\n  }\n}\n\nconst needsPct = totalExpense ? (needs / totalExpense) * 100 : 0;\nconst wantsPct = totalExpense ? (wants / totalExpense) * 100 : 0;\n\nconst meta = items[0]?.json || {};\n\nreturn [{\n  json: {\n    reportType: meta.reportType || \"weekly\",\n    report_start: meta.report_start || \"\",\n    report_end: meta.report_end || \"\",\n    totalExpense,\n    totalIncome,\n    needs,\n    wants,\n    needsPct,\n    wantsPct,\n    expenseTotals,\n    incomeTotals,\n    tx_count: rows.length,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        416
+      ],
+      "id": "2215935e-e75d-4d28-98ef-fa29152cfe78",
+      "name": "Aggregate totals"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Payments",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        416
+      ],
+      "id": "4b82d75f-1f35-4488-969e-c1c634473b64",
+      "name": "Get Payments rows1",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\n// Pull summary from upstream Aggregate totals node\nconst summary = $('Aggregate totals').first().json;\n\nconst normSource = (s) => String(s ?? '').trim() || 'Unknown';\nconst toNumber = (v) => {\n  const n = Number(String(v ?? '').replace(/,/g, '').trim());\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst balances = {};\nlet total = 0;\n\nfor (const r of rows) {\n  const source = normSource(r.Source);\n  const amt = toNumber(r.Amount);\n  balances[source] = (balances[source] || 0) + amt;\n  total += amt;\n}\n\nconst breakdown = Object.entries(balances)\n  .map(([source, amount]) => ({ source, amount }))\n  .sort((a, b) => b.amount - a.amount);\n\nreturn [{\n  json: {\n    // Pass-through summary fields from Aggregate totals\n    reportType: summary.reportType,\n    report_start: summary.report_start,\n    report_end: summary.report_end,\n    totalExpense: summary.totalExpense,\n    totalIncome: summary.totalIncome,\n    needs: summary.needs,\n    wants: summary.wants,\n    needsPct: summary.needsPct,\n    wantsPct: summary.wantsPct,\n    expenseTotals: summary.expenseTotals,\n    incomeTotals: summary.incomeTotals,\n    // Balance fields\n    breakdown,\n    total,\n    count: rows.length,\n    no_rows: rows.length === 0,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        416
+      ],
+      "id": "e50aa0d2-a64e-427c-8e52-7a6ede7a1049",
+      "name": "Aggregate balances1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28897132-397b-4dbd-8b15-cd63e0f3a7cd",
+              "name": "=reply_text",
+              "value": "={{ \n`📊 Automated ${($json.reportType || \"weekly\").toUpperCase()} Report\nPeriod: ${($json.report_start || \"\").slice(0,10)} → ${($json.report_end || \"\").slice(0,10)}\n\n💸 Total Expenses: ₱${Number($json.totalExpense || 0).toFixed(2)}\n💰 Total Income: ₱${Number($json.totalIncome || 0).toFixed(2)}\n🧺 Needs: ₱${Number($json.needs || 0).toFixed(2)} (${Number($json.needsPct || 0).toFixed(1)}%)\n🎉 Wants: ₱${Number($json.wants || 0).toFixed(2)} (${Number($json.wantsPct || 0).toFixed(1)}%)\n\n📌 Expense by category:\n${\n  Object.entries($json.expenseTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n📌 Income by category:\n${\n  Object.entries($json.incomeTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n💳 Current balance by source:\n${\n  ($json.breakdown || [])\n    .map(x => `- ${x.source}: ₱${Number(x.amount || 0).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n--------------------\nTotal balance: ₱${Number($json.total || 0).toFixed(2)}\n`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        416
+      ],
+      "id": "a6287dd9-3387-4c9d-b5b9-c7bb43366f6f",
+      "name": "Build final report text"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        416
+      ],
+      "id": "1dc0150c-e907-4948-9a93-2b6140662095",
+      "name": "Send a text message1",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Always weekly only\nreturn [{\n  json: {\n    report_type: \"weekly\",\n    run_date: new Date().toISOString(),\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        416
+      ],
+      "id": "4466eb30-c627-45db-aeec-9cc58f40d85c",
+      "name": "Set report type"
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta = $('Filter rows to period').item.json;\n\nconst startStr = meta.report_start; // \"YYYY-MM-DD\"\nconst endStr   = meta.report_end;   // \"YYYY-MM-DD\"\n\nconst filtered = items\n  .map(i => i.json)\n  .filter(r => {\n    // Compare just the date portion (first 10 chars) as a string\n    const d = String(r.Date || \"\").slice(0, 10);\n    return d >= startStr && d <= endStr;\n  })\n  .map(r => ({\n    json: {\n      ...r,\n      reportType: meta.reportType,\n      report_start: meta.report_start,\n      report_end: meta.report_end,\n    }\n  }));\n\nif (filtered.length === 0) {\n  return [{\n    json: {\n      _no_rows: true,\n      reportType: meta.reportType,\n      report_start: meta.report_start,\n      report_end: meta.report_end,\n      Date: meta.report_start,\n      Type: \"\", Category: \"\", Amount: 0, Description: \"\", Source: \"\",\n    }\n  }];\n}\n\nreturn filtered;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        416
+      ],
+      "id": "efbf4270-ec29-4f06-9e69-2d445e95fafd",
+      "name": "Filter transactions for period"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 28
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2240,
+        640
+      ],
+      "id": "883d763e-69e9-4b2b-9f6f-bbacdfc06d2c",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REDACTED"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1568,
+        640
+      ],
+      "id": "511ea81f-65bc-467d-955a-c15185bdca26",
+      "name": "Get Transactions rows3",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);\n\nfunction toDateStr(d) {\n  const y = d.getUTCFullYear();\n  const m = String(d.getUTCMonth() + 1).padStart(2, '0');\n  const dd = String(d.getUTCDate()).padStart(2, '0');\n  return `${y}-${m}-${dd}`;\n}\n\n// today = the 28th (current month)\nconst endDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 28));\n\n// start = 28th of last month\nconst startDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 28));\n\nreturn [{\n  json: {\n    ...$json,\n    report_start: toDateStr(startDay),  // e.g. 2026-01-28\n    report_end:   toDateStr(endDay),    // e.g. 2026-02-28\n    reportType:   \"monthly\",\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        640
+      ],
+      "id": "b4c199c3-541b-48ed-a21c-17b4df1cef9a",
+      "name": "Filter rows to period1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json).filter(r => !r._no_rows);\n\nconst wantCategories = new Set([\"miscellaneous\", \"self-care\"]);\nconst expenseTotals = {};\nconst incomeTotals = {};\n\nlet totalExpense = 0, totalIncome = 0, needs = 0, wants = 0;\n\nfor (const r of rows) {\n  const type = String(r.Type || \"\").toLowerCase();\n  const cat  = String(r.Category || \"\").toLowerCase();\n  const amt  = Number(r.Amount || 0);\n\n  if (type === \"income\") {\n    incomeTotals[cat] = (incomeTotals[cat] || 0) + amt;\n    totalIncome += amt;\n  } else {\n    expenseTotals[cat] = (expenseTotals[cat] || 0) + amt;\n    totalExpense += amt;\n    if (wantCategories.has(cat)) wants += amt;\n    else needs += amt;\n  }\n}\n\nconst meta = items[0]?.json || {};\n\nreturn [{\n  json: {\n    reportType:   meta.reportType || \"monthly\",\n    report_start: meta.report_start || \"\",\n    report_end:   meta.report_end || \"\",\n    totalExpense, totalIncome,\n    needs, wants,\n    needsPct: totalExpense ? (needs / totalExpense) * 100 : 0,\n    wantsPct: totalExpense ? (wants / totalExpense) * 100 : 0,\n    expenseTotals, incomeTotals,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        640
+      ],
+      "id": "eaf82e46-6d61-426f-9cda-d1f06dc63cff",
+      "name": "Aggregate totals1"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Payments",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        640
+      ],
+      "id": "d6cd6e2e-2fb9-49d3-aa46-d88fb3ec1aef",
+      "name": "Get Payments rows2",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\nconst summary = $('Aggregate totals1').first().json;\n\nconst normSource = (s) => String(s ?? '').trim() || 'Unknown';\nconst toNumber = (v) => {\n  const n = Number(String(v ?? '').replace(/,/g, '').trim());\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst balances = {};\nlet total = 0;\n\nfor (const r of rows) {\n  const source = normSource(r.Source);\n  const amt = toNumber(r.Amount);\n  balances[source] = (balances[source] || 0) + amt;\n  total += amt;\n}\n\nconst breakdown = Object.entries(balances)\n  .map(([source, amount]) => ({ source, amount }))\n  .sort((a, b) => b.amount - a.amount);\n\nreturn [{\n  json: {\n    reportType:    summary.reportType,\n    report_start:  summary.report_start,\n    report_end:    summary.report_end,\n    totalExpense:  summary.totalExpense,\n    totalIncome:   summary.totalIncome,\n    needs:         summary.needs,\n    wants:         summary.wants,\n    needsPct:      summary.needsPct,\n    wantsPct:      summary.wantsPct,\n    expenseTotals: summary.expenseTotals,\n    incomeTotals:  summary.incomeTotals,\n    breakdown, total,\n    no_rows: rows.length === 0,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        640
+      ],
+      "id": "a94b304a-89f3-4d3a-aa18-1c1dae37a9c5",
+      "name": "Aggregate balances2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28897132-397b-4dbd-8b15-cd63e0f3a7cd",
+              "name": "=reply_text",
+              "value": "={{ \n`📊 Automated MONTHLY Report\nPeriod: ${($json.report_start || \"\").slice(0,10)} → ${($json.report_end || \"\").slice(0,10)}\n\n💸 Total Expenses: ₱${Number($json.totalExpense || 0).toFixed(2)}\n💰 Total Income: ₱${Number($json.totalIncome || 0).toFixed(2)}\n🧺 Needs: ₱${Number($json.needs || 0).toFixed(2)} (${Number($json.needsPct || 0).toFixed(1)}%)\n🎉 Wants: ₱${Number($json.wants || 0).toFixed(2)} (${Number($json.wantsPct || 0).toFixed(1)}%)\n\n📌 Expense by category:\n${\n  Object.entries($json.expenseTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n📌 Income by category:\n${\n  Object.entries($json.incomeTotals || {})\n    .sort((a,b)=>b[1]-a[1])\n    .map(([k,v])=>`- ${k}: ₱${Number(v).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n💳 Current balance by source:\n${\n  ($json.breakdown || [])\n    .map(x => `- ${x.source}: ₱${Number(x.amount || 0).toFixed(2)}`)\n    .join(\"\\n\") || \"- none\"\n}\n\n--------------------\nTotal balance: ₱${Number($json.total || 0).toFixed(2)}\n`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        640
+      ],
+      "id": "108064f8-0f0d-44cb-b805-1ecfc3039464",
+      "name": "Build final report text1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        640
+      ],
+      "id": "0dd3d88b-f15d-41e5-8cf1-f3eb44db86e2",
+      "name": "Send a text message2",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    report_type: \"monthly\",\n    run_date: new Date().toISOString(),\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        640
+      ],
+      "id": "662f5b93-68fc-4f39-b5fc-bd65e93d6e20",
+      "name": "Set report type1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta = $('Filter rows to period1').item.json;\n\nconst startStr = meta.report_start;\nconst endStr   = meta.report_end;\n\nconst filtered = items\n  .map(i => i.json)\n  .filter(r => {\n    const d = String(r.Date || \"\").slice(0, 10);\n    return d >= startStr && d <= endStr;\n  })\n  .map(r => ({\n    json: {\n      ...r,\n      reportType: meta.reportType,\n      report_start: meta.report_start,\n      report_end: meta.report_end,\n    }\n  }));\n\nif (filtered.length === 0) {\n  return [{\n    json: {\n      _no_rows: true,\n      reportType: meta.reportType,\n      report_start: meta.report_start,\n      report_end: meta.report_end,\n      Date: meta.report_start,\n      Type: \"\", Category: \"\", Amount: 0, Description: \"\", Source: \"\",\n    }\n  }];\n}\n\nreturn filtered;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        640
+      ],
+      "id": "b9bc18e0-32ab-4c8f-840d-6f2e7c8f0c09",
+      "name": "Filter transactions for period1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2240,
+        864
+      ],
+      "id": "6c3a431e-b7b6-43dd-893c-4194478ff128",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/REDACTED/edit?gid=449480570#gid=449480570",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2016,
+        864
+      ],
+      "id": "d03859d4-ea0f-46a9-8b2c-8250a1d6db62",
+      "name": "Get Payments rows3",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\n// Normalize helpers\nconst normSource = (s) => String(s ?? '').trim() || 'Unknown';\nconst toNumber = (v) => {\n  const n = Number(String(v ?? '').replace(/,/g, '').trim());\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst balances = {};\nlet total = 0;\n\nfor (const r of rows) {\n  const source = normSource(r.Source);\n  const amt = toNumber(r.Amount);\n\n  balances[source] = (balances[source] || 0) + amt;\n  total += amt;\n}\n\n// Create a sorted array for output formatting\nconst breakdown = Object.entries(balances)\n  .map(([source, amount]) => ({ source, amount }))\n  .sort((a, b) => b.amount - a.amount);\n\nreturn [{\n  json: {\n    breakdown,\n    total,\n    count: rows.length,\n    no_rows: rows.length === 0,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        864
+      ],
+      "id": "57dc3464-fbe7-4537-9572-84a0cffeed7b",
+      "name": "Aggregate balances3"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REDACTED"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Balance Logs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toISOString() }}",
+            "Total Balance": "={{ $json.total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Balance",
+              "displayName": "Total Balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1568,
+        864
+      ],
+      "id": "89ee163c-9de6-45ae-a5e7-c31bb9152c84",
+      "name": "Append row to \"Balance Logs\"",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3187dc63-4b42-46bf-9687-400654f9032c",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "67131de1-f2d0-450c-97ea-fdf7faa52eee",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "7f5f1fac-9391-4768-9140-9f7713358a0e",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "start",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f780b8a3-4ef0-4800-9e70-8164b1d8c53c",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "help",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1792,
+        -288
+      ],
+      "id": "d0d0c80a-4de4-4d22-898d-5034f18bcf7a",
+      "name": "If text contains 'help/start'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67ffa8a7-1cea-42f6-8bfc-c5fa6ad963db",
+              "name": "reply_text",
+              "value": "=PROMPT GUIDE\n\n1) Send expense:\n```\nAmount:\nDescription:\nMode of Payment:\n```\n\n2) Send income:\n```\nAmount:\nDescription:\nSource Account:\n```\n\n3) Monthly summary (current month):\nSend: /summary\n\n4) Daily summary (specific day):\nSend: /current\nOr: /current YYYY-MM-DD\nExample: /current 2026-03-02\n\n5) Current balance:\nSend: /balance",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        -768
+      ],
+      "id": "263eb569-3b8c-4aca-bbbf-97a9489f912d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1344,
+        -768
+      ],
+      "id": "59774693-2944-4b5a-813e-c4b0e4bee3af",
+      "name": "Telegram Send Message1",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'summary'": {
+      "main": [
+        [
+          {
+            "node": "Get Transactions rows1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If message has photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If message has photo": {
+      "main": [
+        [
+          {
+            "node": "Get image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set text to raw_input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image": {
+      "main": [
+        [
+          {
+            "node": "Apply OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "If text contains 'help/start'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply OCR": {
+      "main": [
+        [
+          {
+            "node": "Set text to raw_input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set text to raw_input": {
+      "main": [
+        [
+          {
+            "node": "Extract info to JSON format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set text to raw_input1": {
+      "main": [
+        [
+          {
+            "node": "Extract info to JSON format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract info to JSON format": {
+      "main": [
+        [
+          {
+            "node": "Parse AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Build reply text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'current'": {
+      "main": [
+        [
+          {
+            "node": "Parse current date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'summary'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse current date": {
+      "main": [
+        [
+          {
+            "node": "Get Transactions rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter rows to target day": {
+      "main": [
+        [
+          {
+            "node": "Aggregate daily totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate daily totals": {
+      "main": [
+        [
+          {
+            "node": "Build reply text2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'balance'": {
+      "main": [
+        [
+          {
+            "node": "Get Payments rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'current'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transactions rows": {
+      "main": [
+        [
+          {
+            "node": "Filter rows to target day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transactions rows1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payments rows": {
+      "main": [
+        [
+          {
+            "node": "Aggregate balances",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate balances": {
+      "main": [
+        [
+          {
+            "node": "Build reply text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build reply text": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build reply text1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build reply text2": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set report type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transactions rows2": {
+      "main": [
+        [
+          {
+            "node": "Filter transactions for period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter rows to period": {
+      "main": [
+        [
+          {
+            "node": "Get Transactions rows2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payments rows1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate balances1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate totals": {
+      "main": [
+        [
+          {
+            "node": "Get Payments rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate balances1": {
+      "main": [
+        [
+          {
+            "node": "Build final report text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build final report text": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set report type": {
+      "main": [
+        [
+          {
+            "node": "Filter rows to period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter transactions for period": {
+      "main": [
+        [
+          {
+            "node": "Aggregate totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Set report type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transactions rows3": {
+      "main": [
+        [
+          {
+            "node": "Filter transactions for period1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter rows to period1": {
+      "main": [
+        [
+          {
+            "node": "Get Transactions rows3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate totals1": {
+      "main": [
+        [
+          {
+            "node": "Get Payments rows2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payments rows2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate balances2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate balances2": {
+      "main": [
+        [
+          {
+            "node": "Build final report text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build final report text1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set report type1": {
+      "main": [
+        [
+          {
+            "node": "Filter rows to period1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter transactions for period1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate totals1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get Payments rows3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payments rows3": {
+      "main": [
+        [
+          {
+            "node": "Aggregate balances3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate balances3": {
+      "main": [
+        [
+          {
+            "node": "Append row to \"Balance Logs\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'help/start'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'balance'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "67e43295-eb7d-4bdf-b388-48d4b8d50fba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REDACTED"
+  },
+  "id": "NYhbKj2kTQfbNYlS",
+  "tags": []
 }
-

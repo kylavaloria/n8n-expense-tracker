@@ -49,22 +49,19 @@ This repo is designed to showcase an end-to-end "delivery mindset": automation d
 ```mermaid
 flowchart TD
   A[Telegram Trigger] --> B[Normalize message fields]
-  B --> C{Command type?}
+  B --> C{Command type}
 ​
-  C -->|Help| H[Send prompt guide]
+  C -->|help| H[Send prompt guide]
+  C -->|balance| BL[Fetch Payments rows] --> BA[Aggregate balances] --> BT[Send balance message]
+  C -->|current| CR[Fetch Transactions rows] --> CF[Filter to target day] --> CA[Aggregate daily totals] --> CT[Send daily summary]
+  C -->|summary| SR[Fetch Transactions rows] --> SF[Filter to month] --> SA[Aggregate totals] --> ST[Send summary]
+  C -->|transaction| D{Has photo}
 ​
-  C -->|Balance| BL[Fetch Payments rows] --> BA[Aggregate balances] --> BT[Send balance message]
+  D -->|yes| E[Get image] --> F[OCR space] --> G[raw input text]
+  D -->|no| G
 ​
-  C -->|Current| CR[Fetch Transactions rows] --> CF[Filter to target day] --> CA[Aggregate daily totals] --> CT[Send daily summary]
-​
-  C -->|Summary| SR[Fetch Transactions rows] --> SF[Filter to month] --> SA[Aggregate totals] --> ST[Send summary]
-​
-  C -->|Transaction| D{Has receipt photo?}
-  D -->|Yes| E[Get image] --> F[OCR.space] --> G[raw_input text]
-  D -->|No| G
-​
-  G --> I[OpenRouter LLM parse to JSON]
-  I --> J[Append row to Google Sheets: Transactions]
+  G --> I[LLM parse to JSON]
+  I --> J[Append to Google Sheets]
 ```
 ​
 ## Data model (Google Sheets)

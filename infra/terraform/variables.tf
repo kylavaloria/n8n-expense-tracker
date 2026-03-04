@@ -6,61 +6,41 @@ variable "subscription_id" {
 variable "location" {
   description = "Azure region where resources will be deployed."
   type        = string
-  default     = "eastus"
-}
-
-variable "project_name" {
-  description = "Project identifier used in resource naming."
-  type        = string
-  default     = "n8nexpense"
 }
 
 variable "resource_group_name" {
   description = "Name of the Azure resource group."
   type        = string
-  default     = "rg-n8n-expense"
 }
 
 variable "log_analytics_workspace_name" {
-  description = "Optional custom name for Log Analytics workspace."
+  description = "Name for Log Analytics workspace."
   type        = string
-  default     = null
 }
 
 variable "container_app_environment_name" {
-  description = "Optional custom name for Container Apps environment."
+  description = "Name for Container Apps environment."
   type        = string
-  default     = null
 }
 
 variable "container_app_name" {
   description = "Name of the n8n Azure Container App."
   type        = string
-  default     = "n8n-app"
 }
 
 variable "storage_account_name" {
-  description = "Optional custom storage account name (3-24 lowercase alphanumeric)."
+  description = "Storage account name (3-24 lowercase alphanumeric, globally unique)."
   type        = string
-  default     = null
+
+  validation {
+    condition     = can(regex("^[a-z0-9]{3,24}$", var.storage_account_name))
+    error_message = "storage_account_name must be 3-24 lowercase letters and digits only."
+  }
 }
 
 variable "storage_share_name" {
   description = "Name of the Azure file share for persistent n8n data."
   type        = string
-  default     = "n8n-data"
-}
-
-variable "container_cpu" {
-  description = "CPU allocation for the n8n container."
-  type        = number
-  default     = 0.5
-}
-
-variable "container_memory" {
-  description = "Memory allocation for the n8n container."
-  type        = string
-  default     = "1Gi"
 }
 
 variable "n8n_encryption_key" {
@@ -82,8 +62,7 @@ variable "telegram_id" {
 }
 
 variable "webhook_url" {
-  description = "Optional explicit webhook URL. If null, defaults to the expected Container App URL."
+  description = "Public HTTPS webhook URL for n8n."
   type        = string
-  default     = null
 }
 

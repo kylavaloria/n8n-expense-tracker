@@ -49,7 +49,7 @@ This repo is designed to showcase an end-to-end "delivery mindset": automation d
 ```mermaid
 flowchart TD
   A[Telegram Trigger] --> B[Normalize message fields]
-  B --> C{Command type}
+  B --> C{"Command type"}
 ​
   C -->|help| H[Send prompt guide]
 ​
@@ -67,7 +67,7 @@ flowchart TD
   SF --> SA[Aggregate totals]
   SA --> ST[Send summary]
 ​
-  C -->|transaction| D{Has photo}
+  C -->|transaction| D{"Has photo"}
 ​
   D -->|yes| E[Get image]
   E --> F[OCR space]

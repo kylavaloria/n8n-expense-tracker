@@ -16,10 +16,10 @@
       ],
       "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
       "name": "Telegram Trigger",
-      "webhookId": "f72ac564-b0c6-40cc-9872-74215a24263d",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -162,10 +162,10 @@
       ],
       "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
       "name": "Get image",
-      "webhookId": "6dd8b0df-0fb0-45e7-a723-515facce1309",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -176,7 +176,7 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -259,14 +259,14 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        448,
+        672,
         96
       ],
       "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
       "name": "Append row in sheet",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -278,7 +278,7 @@
             {
               "id": "6399afab-7c09-4558-ad92-75826a723189",
               "name": "=parsed",
-              "value": "={{ $json.choices[$json.choices.length - 1].message.content }}",
+              "value": "={{ $json.parsed }}",
               "type": "array"
             },
             {
@@ -300,7 +300,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
+        448,
         96
       ],
       "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
@@ -316,7 +316,7 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "helloworld"
+              "value": "redacted"
             },
             {
               "name": "language",
@@ -393,13 +393,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "REDACTED_API_KEY"
+              "value": "Bearer redacted"
             },
             {
               "name": "Content-Type",
@@ -413,7 +413,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n  {\n    model: \"openai/gpt-4o-mini\",\n    temperature: 0,\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends ONLY template-form transaction logs in this exact format.\\n\\nEXPENSE FORMAT\\nAmount: <number>\\nDescription: <text>\\nMode of Payment: <account>\\n\\nINCOME FORMAT\\nAmount: <number>\\nDescription: <text>\\nSource Account: <account>\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains \\\"Mode of Payment:\\\" → type = expense\\n- If the input contains \\\"Source Account:\\\" → type = income\\n- If neither is present → return []\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n- Description MUST come from the line that starts with \\\"Description:\\\".\\n\\nAmount rules:\\n- Amount MUST come from the line that starts with \\\"Amount:\\\".\\n- Extract the numeric value exactly as written after \\\"Amount:\\\".\\n- Never modify, round, or estimate.\\n- If \\\"Amount:\\\" is missing or not a valid number → return []\\n\\nSource rules:\\n- For expense: source MUST come from the line that starts with \\\"Mode of Payment:\\\".\\n- For income: source MUST come from the line that starts with \\\"Source Account:\\\".\\n- Use the value exactly as written after the colon.\\n- If the required line is missing → return []\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
+        "jsonBody": "={{\n  {\n    model: \"llama-3.1-8b-instant\",\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are an automated finance parser.\\n\\nThe user sends ONLY template-form transaction logs in this exact format.\\n\\nEXPENSE FORMAT\\nAmount: <number>\\nDescription: <text>\\nMode of Payment: <account>\\n\\nINCOME FORMAT\\nAmount: <number>\\nDescription: <text>\\nSource Account: <account>\\n\\nYour job is to extract structured transaction data.\\n\\nDo NOT summarize.\\nDo NOT invent information.\\nDo NOT guess typical prices.\\nOnly extract what exists in the input.\\n\\nReturn ONLY valid JSON ARRAY in this format:\\n[\\n  {\\n    \\\"type\\\": \\\"expense\\\" | \\\"income\\\",\\n    \\\"category\\\": string,\\n    \\\"description\\\": string,\\n    \\\"amount\\\": number,\\n    \\\"source\\\": string\\n  }\\n]\\n\\nNo markdown. No explanation. No extra text.\\n\\nType rules:\\n- If the input contains \\\"Mode of Payment:\\\" → type = expense\\n- If the input contains \\\"Source Account:\\\" → type = income\\n- If neither is present → return []\\n\\nCategory rules:\\nIf type = expense, category MUST be one of:\\n- bills\\n- food\\n- household\\n- school\\n- self-care\\n- other essentials\\n- miscellaneous\\n- transportation\\n\\nIf type = income, category MUST be one of:\\n- allowance\\n- salary\\n- scholarship\\n- others\\n\\nTransportation mapping:\\n- jeep / jeepney / trike / bus / lrt / mrt / angkas / grab / taxi → transportation\\n\\nDescription rules:\\n- Keep it short but specific.\\n- Base it directly on the input.\\n- Do NOT change transport mode.\\n- Description MUST come from the line that starts with \\\"Description:\\\".\\n\\nAmount rules:\\n- Amount MUST come from the line that starts with \\\"Amount:\\\".\\n- Extract the numeric value exactly as written after \\\"Amount:\\\".\\n- Never modify, round, or estimate.\\n- If \\\"Amount:\\\" is missing or not a valid number → return []\\n\\nSource rules:\\n- For expense: source MUST come from the line that starts with \\\"Mode of Payment:\\\".\\n- For income: source MUST come from the line that starts with \\\"Source Account:\\\".\\n- Use the value exactly as written after the colon.\\n- If the required line is missing → return []\"\n      },\n      {\n        role: \"user\",\n        content: String($json.raw_input ?? \"\")\n      }\n    ]\n  }\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -465,10 +465,10 @@
       ],
       "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
       "name": "Send a text message",
-      "webhookId": "b31acdeb-c0fe-4e5a-b9a4-d0d7dc40fdef",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -560,10 +560,10 @@
       ],
       "id": "3cd701e4-9ce8-4338-8940-12a7cb974b91",
       "name": "Send Telegram message",
-      "webhookId": "7b9180dd-3103-4897-856a-ccde3bca45de",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -606,7 +606,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -626,7 +626,7 @@
       "name": "Get Payments rows",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -637,7 +637,7 @@
         "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ"
+          "value": "redacted"
         },
         "sheetName": {
           "__rl": true,
@@ -656,7 +656,7 @@
       "name": "Get Transactions rows",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -666,7 +666,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -686,7 +686,7 @@
       "name": "Get Transactions rows1",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -718,10 +718,10 @@
       ],
       "id": "6b74334e-c59e-44fc-94f1-cd851d9fabcf",
       "name": "Telegram Send Message",
-      "webhookId": "76d31f17-45a8-4326-8108-17adb9254cce",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -819,7 +819,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -839,7 +839,7 @@
       "name": "Get Transactions rows2",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -875,7 +875,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -895,7 +895,7 @@
       "name": "Get Payments rows1",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -938,7 +938,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $json.chat_id }}",
+        "chatId": "=redacted",
         "text": "={{ $json.reply_text }}",
         "additionalFields": {}
       },
@@ -950,10 +950,10 @@
       ],
       "id": "1dc0150c-e907-4948-9a93-2b6140662095",
       "name": "Send a text message1",
-      "webhookId": "b31acdeb-c0fe-4e5a-b9a4-d0d7dc40fdef",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -1010,7 +1010,7 @@
         "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ"
+          "value": "redacted"
         },
         "sheetName": {
           "__rl": true,
@@ -1029,7 +1029,7 @@
       "name": "Get Transactions rows3",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -1065,7 +1065,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ",
+          "value": "redacted",
           "mode": "id"
         },
         "sheetName": {
@@ -1085,7 +1085,7 @@
       "name": "Get Payments rows2",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -1128,7 +1128,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $json.chat_id }}",
+        "chatId": "=redacted",
         "text": "={{ $json.reply_text }}",
         "additionalFields": {}
       },
@@ -1140,10 +1140,10 @@
       ],
       "id": "0dd3d88b-f15d-41e5-8cf1-f3eb44db86e2",
       "name": "Send a text message2",
-      "webhookId": "b31acdeb-c0fe-4e5a-b9a4-d0d7dc40fdef",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
@@ -1196,12 +1196,12 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?usp=sharing",
+          "value": "https://docs.google.com/spreadsheets/d/redacted/edit?usp=sharing",
           "mode": "url"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ/edit?gid=449480570#gid=449480570",
+          "value": "https://docs.google.com/spreadsheets/d/redacted/edit?gid=449480570#gid=449480570",
           "mode": "url"
         },
         "options": {}
@@ -1216,7 +1216,7 @@
       "name": "Get Payments rows3",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -1241,7 +1241,7 @@
         "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "1AWNo7ZgwmQKCPXKoFPE-jMRbgh1vnZl_nHBw7RIulTQ"
+          "value": "redacted"
         },
         "sheetName": {
           "__rl": true,
@@ -1290,7 +1290,7 @@
       "name": "Append row to \"Balance Logs\"",
       "credentials": {
         "googleApi": {
-          "id": "s0r8f5SwaYDX6QK7",
+          "id": "redacted",
           "name": "Google Sheets account"
         }
       }
@@ -1392,13 +1392,26 @@
       ],
       "id": "59774693-2944-4b5a-813e-c4b0e4bee3af",
       "name": "Telegram Send Message1",
-      "webhookId": "76d31f17-45a8-4326-8108-17adb9254cce",
+      "webhookId": "redacted",
       "credentials": {
         "telegramApi": {
-          "id": "5MkzmwDMblVJ4vqP",
+          "id": "redacted",
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $json.choices[0].message.content || \"\";\n\n// Remove <think>...</think>\ncontent = content.replace(/<think>[\\s\\S]*?<\\/think>/g, \"\").trim();\n\nconst parsed = JSON.parse(content);\n\nreturn [\n  {\n    json: {\n      parsed\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        96
+      ],
+      "id": "e9961828-0aae-4846-a892-d4f8f91787f1",
+      "name": "Code in JavaScript2"
     }
   ],
   "pinData": {},
@@ -1520,7 +1533,7 @@
       "main": [
         [
           {
-            "node": "Parse AI",
+            "node": "Code in JavaScript2",
             "type": "main",
             "index": 0
           }
@@ -1954,6 +1967,17 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Parse AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1962,10 +1986,10 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "67e43295-eb7d-4bdf-b388-48d4b8d50fba",
+  "versionId": "redacted",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "48936346723d79e4f25d7d91cbcadb629760e9475e677dadb70ec847181259a9"
+    "instanceId": "redacted"
   },
   "id": "NYhbKj2kTQfbNYlS",
   "tags": []

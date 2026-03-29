@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" />
   <img src="https://img.shields.io/badge/Google%20Sheets-Storage-34A853?style=for-the-badge&logo=googlesheets&logoColor=white" />
   <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-  <img src="https://img.shields.io/badge/Status-Completed-2ea44f?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Status-Ongoing-2ea44f?style=for-the-badge" />
 </p>
 
 <p>

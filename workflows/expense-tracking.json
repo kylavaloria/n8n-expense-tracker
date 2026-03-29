@@ -12,7 +12,7 @@
       "typeVersion": 1.2,
       "position": [
         -2240,
-        -288
+        -400
       ],
       "id": "673262b4-0c1d-4aa0-a625-8fde08ce71f0",
       "name": "Telegram Trigger",
@@ -60,8 +60,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1120,
-        0
+        -448,
+        272
       ],
       "id": "ef3527e3-d124-4005-aadf-f5e5789331f0",
       "name": "If text contains 'summary'"
@@ -95,8 +95,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -896,
-        96
+        -224,
+        368
       ],
       "id": "8eae1d71-57c5-4ffe-843e-c2837eae5c36",
       "name": "If message has photo"
@@ -143,7 +143,7 @@
       "typeVersion": 3.4,
       "position": [
         -2016,
-        -288
+        -400
       ],
       "id": "b2c455d3-3930-47e1-9875-0d1d49dfd8f3",
       "name": "Normalize"
@@ -157,8 +157,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -672,
-        0
+        0,
+        272
       ],
       "id": "05dc8d26-8e96-4795-adfa-e48b85cd78d9",
       "name": "Get image",
@@ -192,10 +192,21 @@
             "Category": "={{ $json.parsed[$json.parsed.length - 1].category }}",
             "Description": "={{ $json.parsed[$json.parsed.length - 1].description }}",
             "Amount": "={{ $json.parsed[$json.parsed.length - 1].amount }}",
-            "Source": "={{ $json.parsed[$json.parsed.length - 1].source }}"
+            "Source": "={{ $json.parsed[$json.parsed.length - 1].source }}",
+            "Status": "active"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
             {
               "id": "Date",
               "displayName": "Date",
@@ -249,6 +260,16 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -259,8 +280,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        672,
-        96
+        1344,
+        368
       ],
       "id": "d70e9192-4d09-4950-aa2f-2ab62ea0e71d",
       "name": "Append row in sheet",
@@ -300,8 +321,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        96
+        1120,
+        368
       ],
       "id": "2ff26a40-bc43-447a-b456-79f530bfa5b6",
       "name": "Parse AI"
@@ -338,8 +359,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -448,
-        0
+        224,
+        272
       ],
       "id": "34f721c1-9cda-44e6-a640-56ee4736095a",
       "name": "Apply OCR"
@@ -361,8 +382,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        0
+        448,
+        272
       ],
       "id": "b2e7e668-d863-4605-b4d0-487921c7d4cf",
       "name": "Set text to raw_input"
@@ -384,8 +405,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        192
+        448,
+        464
       ],
       "id": "458ced93-f181-4353-a7ba-f6822df1d43a",
       "name": "Set text to raw_input1"
@@ -419,8 +440,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        96
+        672,
+        368
       ],
       "id": "ea9fa4ec-6de6-405d-8950-20d650b26075",
       "name": "Extract info to JSON format"
@@ -432,8 +453,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        -192
+        0,
+        80
       ],
       "id": "340912f4-08bc-43d2-a923-b0407af267be",
       "name": "Code in JavaScript"
@@ -445,8 +466,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -448,
-        -192
+        224,
+        80
       ],
       "id": "0de08a65-4c0b-40d4-a749-3fcdd9b2b900",
       "name": "Code in JavaScript1"
@@ -460,8 +481,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        -192
+        672,
+        80
       ],
       "id": "ddba5f3f-272c-4ae4-9c1a-0f4e3de68c2b",
       "name": "Send a text message",
@@ -500,8 +521,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1344,
-        -96
+        -672,
+        176
       ],
       "id": "197204c6-f01e-435e-b6b3-f10b142f98c2",
       "name": "If text contains 'current'"
@@ -513,8 +534,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1120,
-        -384
+        -448,
+        -112
       ],
       "id": "3afa7384-4a9a-4529-bc61-0bbdb94e5a84",
       "name": "Parse current date"
@@ -526,8 +547,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        -384
+        0,
+        -112
       ],
       "id": "6c41394f-afbe-4f58-a90d-19279d04ad7c",
       "name": "Filter rows to target day",
@@ -540,8 +561,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -448,
-        -384
+        224,
+        -112
       ],
       "id": "b0801d78-124b-482f-8a9f-75bc84e37deb",
       "name": "Aggregate daily totals"
@@ -555,8 +576,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        -384
+        672,
+        -112
       ],
       "id": "3cd701e4-9ce8-4338-8940-12a7cb974b91",
       "name": "Send Telegram message",
@@ -595,8 +616,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1568,
-        -192
+        -896,
+        80
       ],
       "id": "9d985f7f-2d96-4786-b618-00f8b164cead",
       "name": "If text contains 'balance'"
@@ -619,8 +640,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -1344,
-        -576
+        -672,
+        -304
       ],
       "id": "f3379dc9-ef3b-4b0a-a635-45ba1f1479e1",
       "name": "Get Payments rows",
@@ -636,21 +657,29 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "mode": "id",
-          "value": "redacted"
+          "value": "=redacted",
+          "mode": "id"
         },
         "sheetName": {
           "__rl": true,
           "value": "Transactions",
           "mode": "name"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -896,
-        -384
+        -224,
+        -112
       ],
       "id": "1831c031-21f5-4a55-89ab-e0607778b84c",
       "name": "Get Transactions rows",
@@ -674,13 +703,21 @@
           "value": "Transactions",
           "mode": "name"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -896,
-        -192
+        -224,
+        80
       ],
       "id": "3b3a9e5f-d9fb-4bf2-80c2-504cc691227d",
       "name": "Get Transactions rows1",
@@ -698,8 +735,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1120,
-        -576
+        -448,
+        -304
       ],
       "id": "660f1963-8d01-4948-91f0-85dcefb7fc08",
       "name": "Aggregate balances"
@@ -713,8 +750,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -672,
-        -576
+        0,
+        -304
       ],
       "id": "6b74334e-c59e-44fc-94f1-cd851d9fabcf",
       "name": "Telegram Send Message",
@@ -743,8 +780,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -896,
-        -576
+        -224,
+        -304
       ],
       "id": "0281f2f4-b5d3-4dac-b907-61a2f1457771",
       "name": "Build reply text"
@@ -766,8 +803,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        -192
+        448,
+        80
       ],
       "id": "2898196a-d8a6-4eb3-ab2b-e873b996431e",
       "name": "Build reply text1"
@@ -789,8 +826,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        -384
+        448,
+        -112
       ],
       "id": "03779857-e271-440f-bf68-00ca2258f2d6",
       "name": "Build reply text2"
@@ -809,7 +846,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        416
+        688
       ],
       "id": "4b3478fc-9d4e-4719-822d-9c1ea2493b57",
       "name": "Schedule Trigger"
@@ -827,13 +864,21 @@
           "value": "Transactions",
           "mode": "name"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
         -1568,
-        416
+        688
       ],
       "id": "0d88838f-9ce7-478d-ac24-b5e3f28c6e9c",
       "name": "Get Transactions rows2",
@@ -852,7 +897,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        416
+        688
       ],
       "id": "ad5ff02d-c18a-4212-a291-7ef4dae7c4f7",
       "name": "Filter rows to period"
@@ -865,7 +910,7 @@
       "typeVersion": 2,
       "position": [
         -1120,
-        416
+        688
       ],
       "id": "2215935e-e75d-4d28-98ef-fa29152cfe78",
       "name": "Aggregate totals"
@@ -889,7 +934,7 @@
       "typeVersion": 4.7,
       "position": [
         -896,
-        416
+        688
       ],
       "id": "4b82d75f-1f35-4488-969e-c1c634473b64",
       "name": "Get Payments rows1",
@@ -908,7 +953,7 @@
       "typeVersion": 2,
       "position": [
         -672,
-        416
+        688
       ],
       "id": "e50aa0d2-a64e-427c-8e52-7a6ede7a1049",
       "name": "Aggregate balances1"
@@ -931,7 +976,7 @@
       "typeVersion": 3.4,
       "position": [
         -448,
-        416
+        688
       ],
       "id": "a6287dd9-3387-4c9d-b5b9-c7bb43366f6f",
       "name": "Build final report text"
@@ -946,7 +991,7 @@
       "typeVersion": 1.2,
       "position": [
         -224,
-        416
+        688
       ],
       "id": "1dc0150c-e907-4948-9a93-2b6140662095",
       "name": "Send a text message1",
@@ -966,7 +1011,7 @@
       "typeVersion": 2,
       "position": [
         -2016,
-        416
+        688
       ],
       "id": "4466eb30-c627-45db-aeec-9cc58f40d85c",
       "name": "Set report type"
@@ -979,7 +1024,7 @@
       "typeVersion": 2,
       "position": [
         -1344,
-        416
+        688
       ],
       "id": "efbf4270-ec29-4f06-9e69-2d445e95fafd",
       "name": "Filter transactions for period"
@@ -999,7 +1044,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        640
+        912
       ],
       "id": "883d763e-69e9-4b2b-9f6f-bbacdfc06d2c",
       "name": "Schedule Trigger1"
@@ -1017,13 +1062,21 @@
           "value": "Transactions",
           "mode": "name"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
         -1568,
-        640
+        912
       ],
       "id": "511ea81f-65bc-467d-955a-c15185bdca26",
       "name": "Get Transactions rows3",
@@ -1042,7 +1095,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        640
+        912
       ],
       "id": "b4c199c3-541b-48ed-a21c-17b4df1cef9a",
       "name": "Filter rows to period1"
@@ -1055,7 +1108,7 @@
       "typeVersion": 2,
       "position": [
         -1120,
-        640
+        912
       ],
       "id": "eaf82e46-6d61-426f-9cda-d1f06dc63cff",
       "name": "Aggregate totals1"
@@ -1079,7 +1132,7 @@
       "typeVersion": 4.7,
       "position": [
         -896,
-        640
+        912
       ],
       "id": "d6cd6e2e-2fb9-49d3-aa46-d88fb3ec1aef",
       "name": "Get Payments rows2",
@@ -1098,7 +1151,7 @@
       "typeVersion": 2,
       "position": [
         -672,
-        640
+        912
       ],
       "id": "a94b304a-89f3-4d3a-aa18-1c1dae37a9c5",
       "name": "Aggregate balances2"
@@ -1121,7 +1174,7 @@
       "typeVersion": 3.4,
       "position": [
         -448,
-        640
+        912
       ],
       "id": "108064f8-0f0d-44cb-b805-1ecfc3039464",
       "name": "Build final report text1"
@@ -1136,7 +1189,7 @@
       "typeVersion": 1.2,
       "position": [
         -224,
-        640
+        912
       ],
       "id": "0dd3d88b-f15d-41e5-8cf1-f3eb44db86e2",
       "name": "Send a text message2",
@@ -1156,7 +1209,7 @@
       "typeVersion": 2,
       "position": [
         -2016,
-        640
+        912
       ],
       "id": "662f5b93-68fc-4f39-b5fc-bd65e93d6e20",
       "name": "Set report type1"
@@ -1169,7 +1222,7 @@
       "typeVersion": 2,
       "position": [
         -1344,
-        640
+        912
       ],
       "id": "b9bc18e0-32ab-4c8f-840d-6f2e7c8f0c09",
       "name": "Filter transactions for period1"
@@ -1186,7 +1239,7 @@
       "typeVersion": 1.3,
       "position": [
         -2240,
-        864
+        1136
       ],
       "id": "6c3a431e-b7b6-43dd-893c-4194478ff128",
       "name": "Schedule Trigger2"
@@ -1210,7 +1263,7 @@
       "typeVersion": 4.7,
       "position": [
         -2016,
-        864
+        1136
       ],
       "id": "d03859d4-ea0f-46a9-8b2c-8250a1d6db62",
       "name": "Get Payments rows3",
@@ -1229,7 +1282,7 @@
       "typeVersion": 2,
       "position": [
         -1792,
-        864
+        1136
       ],
       "id": "57dc3464-fbe7-4537-9572-84a0cffeed7b",
       "name": "Aggregate balances3"
@@ -1284,7 +1337,7 @@
       "typeVersion": 4.7,
       "position": [
         -1568,
-        864
+        1136
       ],
       "id": "89ee163c-9de6-45ae-a5e7-c31bb9152c84",
       "name": "Append row to \"Balance Logs\"",
@@ -1349,8 +1402,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1792,
-        -288
+        -1120,
+        -16
       ],
       "id": "d0d0c80a-4de4-4d22-898d-5034f18bcf7a",
       "name": "If text contains 'help/start'"
@@ -1372,8 +1425,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1568,
-        -768
+        -896,
+        -496
       ],
       "id": "263eb569-3b8c-4aca-bbbf-97a9489f912d",
       "name": "Edit Fields"
@@ -1387,8 +1440,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1344,
-        -768
+        -672,
+        -496
       ],
       "id": "59774693-2944-4b5a-813e-c4b0e4bee3af",
       "name": "Telegram Send Message1",
@@ -1407,11 +1460,877 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        96
+        896,
+        368
       ],
       "id": "e9961828-0aae-4846-a892-d4f8f91787f1",
       "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "88aecaac-7cef-49c5-be0c-b1a35533b61b",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "logs",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1344,
+        -112
+      ],
+      "id": "855a5af6-f413-4506-9d3b-139096ea2fbd",
+      "name": "If text contains 'logs'"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "redacted",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1120,
+        -688
+      ],
+      "id": "b24449f4-66ac-4082-a6d5-7ecb810c6ff0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = String($('Normalize').first().json.text || '').trim().toLowerCase();\n\n// supports:\n// /logs\n// /logs 5\nlet limit = 5;\nconst m = text.match(/logs\\s+(\\d+)/);\nif (m) limit = Math.max(1, Math.min(20, Number(m[1])));\n\nconst rows = items\n  .map(i => i.json)\n  .filter(r => String(r.ID || '').trim() !== '');\n\nrows.sort((a, b) => {\n  const da = new Date(a.Date || 0).getTime();\n  const db = new Date(b.Date || 0).getTime();\n  return db - da;\n});\n\nconst picked = rows.slice(0, limit);\n\nconst reply_text = picked.length\n  ? `📒 Recent Transactions\\n\\n` + picked.map((r, idx) =>\n      `${idx + 1}. ${r.ID}\\n${String(r.Date || '').slice(0,10)} | ${r.Type} | ${r.Category}\\n${r.Description}\\n₱${Number(r.Amount || 0).toFixed(2)} | ${r.Source}`\n    ).join('\\n\\n')\n  : `📒 Recent Transactions\\n\\nNo transactions found.`;\n\nreturn [{ json: { reply_text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        -688
+      ],
+      "id": "230664f0-08c6-4ac3-a07a-382e69670dc8",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "03fbda51-8dac-4cf0-9fed-cd4c56e07fe0",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "edit",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1568,
+        -208
+      ],
+      "id": "aeb97ef4-04a5-4764-8ca0-838fdc1a89ef",
+      "name": "If text contains 'edit'"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = String($('Normalize').first().json.text || '').trim();\n\n// Example:\n// /edit TX-006 amount=15 description=\"tric to PUP\"\nconst m = text.match(/^\\/?edit\\s+([^\\s]+)\\s*(.*)$/i);\n\nif (!m) {\n  return [{ json: { error: true, reply_text: '❌ Invalid format.\\nUse: /edit <ID> field=value' } }];\n}\n\nconst targetId = m[1].trim();\nconst rest = m[2] || '';\n\nconst updates = {};\nconst regex = /(\\w+)=(\"[^\"]+\"|[^\\s]+)/g;\nlet match;\n\nwhile ((match = regex.exec(rest)) !== null) {\n  const key = match[1].toLowerCase();\n  let value = match[2];\n  value = value.replace(/^\"|\"$/g, '');\n  updates[key] = value;\n}\n\nconst allowed = ['date', 'type', 'category', 'description', 'amount', 'source'];\nconst clean = {};\nfor (const key of allowed) {\n  if (updates[key] !== undefined) clean[key] = updates[key];\n}\n\nif (Object.keys(clean).length === 0) {\n  return [{ json: { error: true, reply_text: '❌ No valid fields to update.\\nAllowed: date, type, category, description, amount, source' } }];\n}\n\nreturn [{\n  json: {\n    error: false,\n    target_id: targetId,\n    updates: clean\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        -880
+      ],
+      "id": "04dd6159-1af0-44d1-b417-8fe9d5a7fa02",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "redacted",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1120,
+        -880
+      ],
+      "id": "b5a428bd-1062-4f37-b0d6-6cf3bd38ad90",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const targetId = $('Code in JavaScript4').first().json.target_id;\nconst updates = $('Code in JavaScript4').first().json.updates;\n\nconst rows = items.map((i, idx) => ({\n  rowNumber: idx + 2,\n  ...i.json\n}));\n\nconst found = rows.find(r => String(r.ID || '').trim() === String(targetId).trim());\n\nif (!found) {\n  return [{\n    json: {\n      found: false,\n      reply_text: `❌ Transaction not found: ${targetId}`\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    found: true,\n    rowNumber: found.rowNumber,\n    ID: found.ID,\n    Date: updates.date ?? found.Date,\n    Type: updates.type ?? found.Type,\n    Category: updates.category ?? found.Category,\n    Description: updates.description ?? found.Description,\n    Amount: updates.amount ?? found.Amount,\n    Source: updates.source ?? found.Source,\n    Status: found.Status ?? 'active',\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        -880
+      ],
+      "id": "da8c49a4-abc3-4ced-b79f-d49dc929ab3e",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "redacted",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Date": "={{$json.Date}}",
+            "Type": "={{$json.Type}}",
+            "Category": "={{$json.Category}}",
+            "Description": "={{$json.Description}}",
+            "Amount": "={{$json.Amount}}",
+            "Source": "={{$json.Source}}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        -1072
+      ],
+      "id": "f4524c53-a33a-45ae-98b2-2b1172c527f7",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -1072
+      ],
+      "id": "fa2a45a1-8b0d-400d-9b83-247bcaad3849",
+      "name": "Telegram Send Message2",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        -688
+      ],
+      "id": "9bcedffb-fe89-4b97-88d1-f8ae072e22ff",
+      "name": "Telegram Send Message3",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "523e43c5-938b-488e-a8dd-b6b38151a5f0",
+              "leftValue": "={{ $json.found }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -672,
+        -880
+      ],
+      "id": "d256c13f-d541-457b-a42e-caee2ce26f53",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e97e9fe1-a50f-4bc5-948d-d7558777f29a",
+              "name": "reply_text",
+              "value": "={{\n`✅ Transaction updated\n\nID: ${$json.ID}\nDate: ${String($json.Date || '').slice(0,10)}\n\nType: ${$json.Type}\nCategory: ${$json.Category}\n\nDescription: ${$json.Description}\n\nAmount: ₱${Number($json.Amount || 0).toFixed(2)}\nSource: ${$json.Source}`\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        -1072
+      ],
+      "id": "fd92e810-c44d-4023-9f1c-55386014fc40",
+      "name": "Build edit success reply"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        -688
+      ],
+      "id": "7a19b2d9-9ab5-45ee-a8c2-4a0a5fe69795",
+      "name": "Telegram Send Message4",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "62b4f31a-6e2a-4147-8c75-22f02ad0106d",
+              "leftValue": "=={{ ($json.text || \"\").toLowerCase() }}",
+              "rightValue": "/delete",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1792,
+        -400
+      ],
+      "id": "e120aaad-babb-407c-9386-6719ba2aae69",
+      "name": "If text contains 'delete'"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = String($('Normalize').first().json.text || '').trim();\nconst m = text.match(/^\\/?delete\\s+([^\\s]+)$/i);\n\nif (!m) {\n  return [{\n    json: {\n      error: true,\n      reply_text: '❌ Invalid format.\\n\\nUse:\\n/delete <ID>'\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    error: false,\n    target_id: m[1].trim()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1568,
+        -1168
+      ],
+      "id": "37185b82-2326-46af-8a71-ab890f3de681",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f180ea79-af73-4490-981c-fdcf7ac8962e",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1344,
+        -1168
+      ],
+      "id": "4899be9c-f4d6-4c86-bc3c-4048d2c7d7e8",
+      "name": "If delete parse is valid"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "redacted",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $json.target_id }}"
+            },
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "active"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1120,
+        -1264
+      ],
+      "id": "bb7cc2f8-996f-4f1f-bd8a-07681232abf4",
+      "name": "Get row(s) in sheet2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1120,
+        -1072
+      ],
+      "id": "d56e350e-252e-48f0-af98-7696b225d16a",
+      "name": "Telegram Send Message5",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f600aea8-c0c9-494d-85a9-d7790ed040e9",
+              "leftValue": "={{ $json.ID }}",
+              "rightValue": "={{ $('Code in JavaScript6').item.json.target_id }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "73126996-1ae1-4670-8d60-696bfc3f33e6",
+              "leftValue": "={{ $json.ID }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -896,
+        -1264
+      ],
+      "id": "c52e760a-df4f-4f17-ab18-e5f6174c947f",
+      "name": "If delete target found"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "redacted",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transactions",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Date": "={{$json.Date}}",
+            "Type": "={{$json.Type}}",
+            "Category": "={{$json.Category}}",
+            "Description": "={{$json.Description}}",
+            "Amount": "={{$json.Amount}}",
+            "Source": "={{$json.Source}}",
+            "row_number": 0,
+            "Status": "deleted"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -672,
+        -1360
+      ],
+      "id": "9ed11f08-32ca-4dea-8bd2-18bb2d8d7b50",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "redacted",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=❌ Error deleting transaction. Target ID not found.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        -1168
+      ],
+      "id": "621ec4de-6f0e-4156-8aa3-b1ff99672fe5",
+      "name": "Telegram Send Message6",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Transaction is successfully deleted.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -1456
+      ],
+      "id": "3c69545a-0d0d-4145-b9ad-64b9b8bd14a0",
+      "name": "Telegram Send Message7",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "523e43c5-938b-488e-a8dd-b6b38151a5f0",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "deleted",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        -1360
+      ],
+      "id": "fb0ca2be-c734-4cbd-bb54-1ab27102aef7",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=❌ Error deleting transaction. Please report the incident.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -1264
+      ],
+      "id": "510e0881-74b8-4418-84ef-64d8832c213f",
+      "name": "Telegram Send Message8",
+      "webhookId": "redacted",
+      "credentials": {
+        "telegramApi": {
+          "id": "redacted",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1478,7 +2397,7 @@
       "main": [
         [
           {
-            "node": "If text contains 'help/start'",
+            "node": "If text contains 'delete'",
             "type": "main",
             "index": 0
           }
@@ -1978,6 +2897,242 @@
           }
         ]
       ]
+    },
+    "If text contains 'logs'": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'help/start'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'edit'": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'logs'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Build edit success reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Send Message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build edit success reply": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If text contains 'delete'": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If text contains 'edit'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "If delete parse is valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If delete parse is valid": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Send Message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "If delete target found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If delete target found": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Send Message6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Send Message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1986,7 +3141,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d2602f2b-c996-44b7-b924-04a836d25b21",
+  "versionId": "81294a1b-2b1f-4259-9259-623a1ca9656c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "redacted"

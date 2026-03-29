@@ -1,218 +1,287 @@
-# n8n Expense Tracker (Telegram → OCR/LLM → Google Sheets)
+<div align="center">
 
-An event-driven personal finance tracker built with **n8n**. Log expenses/income via **Telegram** (text or receipt photo), extract structured transaction data using **OCR + LLM**, store everything in **Google Sheets**, and receive automated **daily / weekly / monthly summaries** plus **current balance** on demand.
+# n8n Expense Tracker
 
-## What the Expense Tracker does
+### Telegram — OCR / LLM — Google Sheets
 
-### Core workflow
-1. **Capture**: Send a message or receipt photo to your Telegram bot.
-2. **Extract**:
-   - If photo: OCR extracts text (OCR.space).
-   - If text: uses your message directly.
-3. **Parse**: An LLM (OpenRouter) converts the raw text into a strict JSON transaction schema.
-4. **Store**: Appends a normalized row to Google Sheets (`Transactions` tab).
-5. **Report**:
-   - On-demand: `/summary`, `/current`, `/balance`
-   - Scheduled: weekly report (Schedule Trigger), monthly report (Schedule Trigger on day 28)
-   - Optional: daily balance logging to `Balance Logs`
+<p>
+  <img src="https://img.shields.io/badge/n8n-Workflow%20Automation-EA4B71?style=for-the-badge&logo=n8n&logoColor=white" />
+  <img src="https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" />
+  <img src="https://img.shields.io/badge/Google%20Sheets-Storage-34A853?style=for-the-badge&logo=googlesheets&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/Status-Completed-2ea44f?style=for-the-badge" />
+</p>
 
-This repo is designed to showcase an end-to-end "delivery mindset": automation design, parsing reliability, data modeling, reporting, and deployment readiness.
+<p>
+  An event-driven personal finance tracker built with <strong>n8n</strong>.<br/>
+  Log expenses and income via <strong>Telegram</strong> — text or receipt photo —<br/>
+  extract structured data using <strong>OCR + LLM</strong>, store everything in <strong>Google Sheets</strong>,<br/>
+  and receive automated <strong>daily, weekly, and monthly summaries</strong> on demand.
+</p>
 
----
+<p>
+  <a href="#overview">Overview</a> &nbsp;|&nbsp;
+  <a href="#features">Features</a> &nbsp;|&nbsp;
+  <a href="#architecture">Architecture</a> &nbsp;|&nbsp;
+  <a href="#data-model">Data Model</a> &nbsp;|&nbsp;
+  <a href="#commands">Commands</a> &nbsp;|&nbsp;
+  <a href="#setup">Setup</a>
+</p>
+
+</div>
+
+<br/>
+
+## Overview
+
+This project automates personal finance tracking through a Telegram bot backed by an n8n workflow. Instead of manually entering transactions, you send a message or a photo of a receipt — the system does the rest.
+
+| Step | What Happens |
+|:---:|---|
+| **Capture** | Send a message or receipt photo to your Telegram bot |
+| **Extract** | OCR reads text from photos; plain messages are used directly |
+| **Parse** | An LLM converts raw text into a strict JSON transaction schema |
+| **Store** | A normalized row is appended to the Google Sheets `Transactions` tab |
+| **Report** | On-demand and scheduled summaries delivered back via Telegram |
+
+> [!NOTE]
+> All LLM parsing uses a **strict JSON schema** to prevent hallucinated or malformed fields. Transactions are **never physically deleted** — a soft-delete strategy preserves data integrity and audit trails.
+
+<br/>
 
 ## Features
 
 ### Logging
-- **Expense/Income capture** via Telegram
-- **Receipt parsing** (photo → OCR → structured entry)
-- **LLM extraction** with strict JSON-only output (no hallucinated fields)
+
+- Expense and income capture via Telegram message
+- Receipt photo parsing — photo → OCR → structured entry
+- Strict JSON extraction with no hallucinated fields
 
 ### Storage
-- **Google Sheets ledger** (append-only transaction logging)
 
-### Commands (Telegram)
-- **Help / guide**: `/start` or `/help`
-- **Monthly summary**: `/summary`
-- **Daily summary**: `/current` or `/current YYYY-MM-DD`
-- **Current balance**: `/balance`
+- Google Sheets ledger with append-only writes and status tracking
+- Soft delete — transactions marked `deleted` are excluded from all reports
+- Balance Logs sheet for periodic snapshots
 
-### Reports
-- **Daily summary**: totals + category breakdown for a day
-- **Weekly automated report**: needs vs wants, income vs expense, plus balance breakdown
-- **Monthly automated report**: same, computed for the 28th→28th window
-- **Balance logs**: scheduled writes to a `Balance Logs` sheet for trend tracking
+### Reporting
 
----
+| Command | Output |
+|---|---|
+| `/balance` | Current balance across all accounts |
+| `/summary` | Monthly income and expense breakdown |
+| `/current` | Daily summary for today |
+| `/current YYYY-MM-DD` | Daily summary for a specific date |
+
+### Transaction Management
+
+| Command | Description |
+|---|---|
+| `/logs` | View recent active transactions |
+| `/logs 10` | View last N transactions |
+| `/edit <ID> field=value` | Update a specific field on a transaction |
+| `/delete <ID>` | Soft-delete a transaction by ID |
+
+<br/>
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-  A[Telegram Trigger] --> B[Normalize message fields]
-  B --> C{Command}
+    A(["`**Telegram Trigger**`"]):::step --> B[Normalize message fields]
+    B --> C{Command}
 
-  C -->|help| H[Send prompt guide]
+    C -->|help| H[Send prompt guide]
 
-  C -->|balance| BL[Fetch Payments rows]
-  BL --> BA[Aggregate balances]
-  BA --> BT[Send balance message]
+    C -->|balance| BL[Fetch Payments rows]
+    BL --> BA[Aggregate balances]
+    BA --> BT[Send balance message]
 
-  C -->|current| CR[Fetch Transactions rows]
-  CR --> CF[Filter to target day]
-  CF --> CA[Aggregate daily totals]
-  CA --> CT[Send daily summary]
+    C -->|current| CR[Fetch Transactions rows]
+    CR --> CF[Filter to target day]
+    CF --> CA[Aggregate daily totals]
+    CA --> CT[Send daily summary]
 
-  C -->|summary| SR[Fetch Transactions rows]
-  SR --> SF[Filter to month]
-  SF --> SA[Aggregate totals]
-  SA --> ST[Send summary]
+    C -->|summary| SR[Fetch Transactions rows]
+    SR --> SF[Filter to month]
+    SF --> SA[Aggregate totals]
+    SA --> ST[Send summary]
 
-  C -->|transaction| D{Has photo}
+    C -->|logs| LG[Fetch Transactions rows]
+    LG --> LF[Filter active rows]
+    LF --> LL[Format recent logs]
+    LL --> LT[Send logs]
 
-  D -->|yes| E[Get image]
-  E --> F[OCR space]
-  F --> G[Raw input text]
-  D -->|no| G
+    C -->|edit| ED[Parse edit command]
+    ED --> ER[Fetch Transactions rows]
+    ER --> EM[Find and merge updates]
+    EM --> EU[Update row in sheet]
+    EU --> ET[Send edit confirmation]
 
-  G --> I[LLM parse to JSON]
-  I --> J[Append to Google Sheets]
+    C -->|delete| DD[Parse delete command]
+    DD --> DR[Fetch Transactions rows]
+    DR --> DF[Find row by ID]
+    DF --> DU[Update Status to deleted]
+    DU --> DT[Send delete confirmation]
+
+    C -->|transaction| D{Has photo}
+    D -->|yes| E[Get image]
+    E --> F[OCR.space]
+    F --> G[Raw input text]
+    D -->|no| G
+    G --> I[LLM parse to JSON]
+    I --> J[Append to Google Sheets]
+
+    classDef step fill:#dce8f5,stroke:#4a90c4,stroke-width:1.5px,color:#1a1a2e
 ```
 
----
+<br/>
 
-## Data model (Google Sheets)
+## Data Model
 
-### Transactions columns
+Three sheets power the tracker:
 
-The workflow appends the following fields:
+### `Transactions`
 
-- `Date` (ISO timestamp)
-- `Type` (`expense` or `income`)
-- `Category`
-- `Description`
-- `Amount`
-- `Source` (payment method or source account)
+| Column | Description |
+|---|---|
+| <kbd>ID</kbd> | Auto-generated identifier, e.g. `TX-001` |
+| <kbd>Date</kbd> | ISO timestamp |
+| <kbd>Type</kbd> | `expense` or `income` |
+| <kbd>Category</kbd> | Transaction category |
+| <kbd>Description</kbd> | Free-text description |
+| <kbd>Amount</kbd> | Numeric value |
+| <kbd>Source</kbd> | Payment source or account |
+| <kbd>Status</kbd> | `active` or `deleted` |
 
-### Payments sheet
+### `Payments`
 
-Used for the `/balance` computation (grouping by `Source` and summing `Amount`).
+Used for `/balance` computation across accounts.
 
-### Balance Logs sheet
+### `Balance Logs`
 
-Stores periodic snapshots:
-- `Date`
-- `Total Balance`
+Stores periodic balance snapshots — <kbd>Date</kbd> and <kbd>Total Balance</kbd>.
 
----
+### Soft Delete Strategy
+
+> [!IMPORTANT]
+> Transactions are **never physically removed**. Setting `Status = deleted` excludes a row from all logs and summaries while preserving the record for audit and recovery purposes.
+
+| Status | Behavior |
+|:---:|---|
+| `active` | Included in all reports and logs |
+| `deleted` | Excluded from all reports; recoverable |
+
+<br/>
+
+## Commands
+
+### Quick Reference
+
+```
+/start or /help        — Send the prompt guide
+/balance               — Current balance
+/summary               — Monthly summary
+/current               — Today's daily summary
+/current YYYY-MM-DD    — Summary for a specific date
+/logs                  — Recent active transactions
+/logs 10               — Last N transactions
+```
+
+### Logging a Transaction
+
+```
+Add expense
+  Amount:
+  Description:
+  Mode of Payment:
+
+Add income
+  Amount:
+  Description:
+  Source Account:
+```
+
+### Editing a Transaction
+
+```bash
+/edit TX-006 amount=15
+/edit TX-006 description="tric to PUP"
+/edit TX-006 category=transportation amount=20
+```
+
+### Deleting a Transaction
+
+```bash
+/delete TX-006
+```
+
+<br/>
 
 ## Setup
 
 ### Prerequisites
 
-- Docker (recommended)
-- Telegram Bot (token configured in n8n credentials)
-- Google Sheets credentials (service account recommended)
-- OpenRouter API key
-- OCR.space API key (if using receipt photos)
+<kbd>Docker</kbd> &nbsp; <kbd>Telegram Bot Token</kbd> &nbsp; <kbd>Google Sheets Credentials</kbd> &nbsp; <kbd>LLM API Key</kbd> &nbsp; <kbd>OCR.space API Key</kbd>
 
-> ⚠️ Don't hardcode secrets in the workflow JSON. Use environment variables and/or n8n Credentials.
+> [!IMPORTANT]
+> Always use environment variables or n8n credentials for secrets. Never hardcode API keys.
 
-### Local development (Docker)
+### Local Development
 
-#### 1) Create `.env`
-
-Use an `.env.example` pattern like:
+**1. Create `.env`**
 
 ```env
-N8N_ENCRYPTION_KEY=CHANGE_ME_LONG_RANDOM_STRING
+N8N_ENCRYPTION_KEY=CHANGE_ME
 WEBHOOK_URL=http://localhost:5678
 
-OPENROUTER_API_KEY=sk-or-v1-REPLACE_ME
+OPENROUTER_API_KEY=REPLACE_ME
 Telegram_Id=REPLACE_ME
 OCRSPACE_API_KEY=REPLACE_ME
 ```
 
-#### 2) Run n8n
+**2. Start the container**
+
 ```bash
 docker compose up -d
 ```
 
-#### 3) Import the workflow
+**3. Import the workflow**
 
-1. Open n8n UI
-2. Import the workflow JSON (from this repo)
-3. Configure n8n Credentials:
-   - Telegram API
-   - Google Sheets API
+- Open the n8n UI
+- Import the workflow JSON
+- Configure credentials for Telegram, Google Sheets, LLM, and OCR
 
-> Note: Telegram triggers require a public HTTPS URL to receive updates. For local testing, use ngrok/cloudflared.
+### Deployment
 
----
+<details>
+<summary><strong>Click to expand — Azure Container Apps</strong></summary>
 
-## Deployment (Azure, Terraform-first)
+The tracker is designed for deployment on **Azure Container Apps**:
 
-This project is designed to be deployable using **Azure Container Apps**:
+- n8n container with persistent storage
+- Secret management via Azure Key Vault or environment variables
+- Webhook URL pointed to the public container endpoint
 
-- Run `n8nio/n8n` container with HTTPS ingress
-- Persist `/home/node/.n8n` using Azure Files
-- Inject secrets via Container Apps secrets (or Key Vault)
+</details>
 
-Terraform lives in:
-```
-infra/terraform/
-```
+<br/>
 
-Typical flow:
-```bash
-terraform init
-terraform plan
-terraform apply
-```
+## Design Decisions
 
-After deployment:
-- Set `WEBHOOK_URL` to the Azure Container App public URL
-- Activate the Telegram Trigger so it registers the webhook correctly
+| Decision | Rationale |
+|---|---|
+| **Google Sheets as storage** | Simplicity, transparency, and no database setup required |
+| **Soft delete** | Maintains stable IDs and prevents accidental data loss |
+| **Telegram as interface** | Lightweight command interface accessible from any device |
+| **Strict JSON output from LLM** | Prevents hallucinated fields and ensures schema reliability |
+| **OCR.space for receipts** | No local model required; works within n8n HTTP request nodes |
+
+<br/>
 
 ---
 
-## Security notes
-
-- Rotate keys immediately if they were ever committed.
-- Use environment variables or managed secrets (recommended).
-- Treat chat IDs and sheet IDs as "low sensitivity", but keep tokens/API keys secret.
-
----
-
-## Roadmap / Improvements
-
-- Replace Google Sheets with Postgres for stronger guarantees and querying
-- Add validation + retry logic for OCR/LLM failures
-- Add "confidence" flags for ambiguous parses
-- Add observability: error notifications to Telegram + structured logs
-- Add CI checks (formatting, secret scanning)
-
----
-
-## Quick demo commands
-
-`/help` → shows prompt template
-
-Send **expense**:
-```
-Amount:
-Description:
-Mode of Payment:
-```
-
-Send **income**:
-```
-Amount:
-Description:
-Source Account:
-```
-
-`/summary` → monthly summary
-
-`/current` or `/current YYYY-MM-DD` → daily summary
-
-`/balance` → current balance by source
+<div align="center">
+  <sub>
+    Built with n8n, Telegram, Google Sheets, and OCR.space &nbsp;&bull;&nbsp; Containerized with Docker
+  </sub>
+</div>
